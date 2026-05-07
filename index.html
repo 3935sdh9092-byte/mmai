@@ -68,7 +68,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .qty-row{display:flex;align-items:center;gap:8px}
 .qty-btn{width:40px;height:40px;border:1.5px solid var(--g200);border-radius:var(--r-sm);background:var(--g50);font-size:20px;color:var(--g600);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
 .qty-btn:active{transform:scale(.9);background:var(--g100)}
-.qty-inp{width:60px;text-align:center;font-size:16px;font-weight:700;border:1.5px solid var(--g200);border-radius:var(--r-sm);padding:8px 4px;background:var(--g50);color:var(--g800);font-family:var(--font);outline:none;-webkit-appearance:none}
+.qty-inp{flex:1;text-align:center;font-size:16px;font-weight:700;border:1.5px solid var(--g200);border-radius:var(--r-sm);padding:10px;background:var(--g50);color:var(--g800);font-family:var(--font);outline:none;-webkit-appearance:none}
 .qty-inp:focus{border-color:var(--accent);background:var(--white)}
 .qty-hint{margin-top:8px;font-size:11px;color:var(--g400);line-height:1.6}
 
@@ -146,9 +146,12 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .btn-sheet{height:44px;border:1.5px solid var(--g200);border-radius:var(--r);font-family:var(--font);font-size:14px;color:var(--g600);background:var(--white);cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px}
 
 /* 라벨 화면 */
-.label-screen{display:none;position:fixed;inset:0;background:#ccc;z-index:300;flex-direction:column;align-items:center;justify-content:flex-start;padding:16px 0;overflow-y:auto}
+.label-screen{display:none;position:fixed;inset:0;background:#555;z-index:300;flex-direction:column;align-items:center;justify-content:flex-start;padding:12px 0;overflow-y:auto}
 .label-screen.show{display:flex}
-.label-card{width:559px;min-height:794px;border:2px solid #333;background:#fff;font-family:'Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif;display:flex;flex-direction:column}
+.label-wrap{width:100%;display:flex;flex-direction:column;align-items:center}
+.label-card{width:559px;min-height:794px;border:2px solid #333;background:#fff;font-family:'Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif;display:flex;flex-direction:column;
+  transform-origin:top center;
+}
 .label-top{background:#444;padding:20px 28px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .label-brand{font-size:26px;font-weight:900;color:#fff}
 .label-mode-badge{font-size:13px;font-weight:700;padding:5px 14px}
@@ -504,6 +507,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 
 <!-- 라벨 화면 (A5 흑백) -->
 <div class="label-screen" id="label-screen">
+  <div class="label-wrap" id="label-wrap">
   <div class="label-card" id="label-card">
     <div class="label-top">
       <div class="label-brand">1호창고</div>
@@ -526,8 +530,9 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     </div>
     <div class="label-company">(주)밀리미터에이아이</div>
   </div>
-  <div class="label-actions">
-    <button class="btn-save-label" onclick="saveLabel()">⬇ 이미지 저장</button>
+  </div><!-- /label-wrap -->
+  <div class="label-actions" style="width:100%;max-width:559px;display:flex;gap:8px;padding:12px 14px">
+    <button class="btn-save-label" onclick="saveLabel()">⬇ A5 저장</button>
     <button class="btn-close-label" onclick="closeLabel()">닫기</button>
   </div>
 </div>
@@ -934,19 +939,52 @@ function showLabel() {
 
   document.getElementById('done-screen').classList.remove('show');
   document.getElementById('label-screen').classList.add('show');
+  // 화면 크기에 맞게 라벨 스케일 조정
+  setTimeout(() => scaleLabel(), 50);
+}
+
+function scaleLabel() {
+  const card = document.getElementById('label-card');
+  const screen = document.getElementById('label-screen');
+  if (!card || !screen) return;
+  const screenW = screen.clientWidth - 28;
+  const screenH = screen.clientHeight - 80; // 버튼 영역 제외
+  const scaleW = screenW / 559;
+  const scaleH = screenH / 794;
+  const scale  = Math.min(scaleW, scaleH, 1); // 최대 1배 (확대 안 함)
+  card.style.transform = `scale(${scale})`;
+  card.style.transformOrigin = 'top center';
+  // wrap 높이 조정 (스케일 적용 후 실제 차지 높이)
+  const wrap = document.getElementById('label-wrap');
+  if (wrap) wrap.style.height = (794 * scale + 16) + 'px';
 }
 
 function saveLabel() {
-  html2canvas(document.getElementById('label-card'), {scale:4, backgroundColor:'#fff', useCORS:true, logging:false}).then(canvas => {
-    const d = window._lastDone || {};
-    const a = document.createElement('a');
-    a.download = `라벨_${d.code||''}.png`;
-    a.href = canvas.toDataURL('image/png');
-    a.click();
-  }).catch(() => showT('저장 실패. 다시 시도해주세요.','err'));
+  const card = document.getElementById('label-card');
+  const d = window._lastDone || {};
+  // 저장 시 스케일 원래대로 (A5 사이즈 보장)
+  const prevTransform = card.style.transform;
+  card.style.transform = 'scale(1)';
+  card.style.transformOrigin = 'top left';
+
+  setTimeout(() => {
+    html2canvas(card, {scale:4, backgroundColor:'#fff', useCORS:true, logging:false, width:559, height:794}).then(canvas => {
+      card.style.transform = prevTransform;
+      card.style.transformOrigin = 'top center';
+      const a = document.createElement('a');
+      a.download = `라벨_${d.code||''}.png`;
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }).catch(() => {
+      card.style.transform = prevTransform;
+      showT('저장 실패. 다시 시도해주세요.','err');
+    });
+  }, 100);
 }
 
 function closeLabel() {
+  const card = document.getElementById('label-card');
+  if (card) { card.style.transform = ''; card.style.transformOrigin = ''; }
   document.getElementById('label-screen').classList.remove('show');
   document.getElementById('done-screen').classList.add('show');
 }
@@ -990,6 +1028,19 @@ function showT(msg, type='') {
   t.textContent = msg;
   t.className = `toast show${type?' '+type:''}`;
   setTimeout(() => t.className='toast', 2800);
+}
+
+// ── 단클릭: 미리보기 하이라이트 ──────────────────────────────
+function previewItem(form, item) {
+  // 기존 선택 해제
+  const resultEl = document.getElementById(form+'-date-results');
+  resultEl.querySelectorAll('.sresult').forEach(el => {
+    el.style.background = '';
+  });
+  // 클릭한 항목 하이라이트
+  event.currentTarget.style.background = 'var(--in-bg)';
+  // 안내 토스트
+  showT('더블클릭하면 바로 연결돼요!', '');
 }
 
 // ── 입력 감지: 완전한 관리번호면 바로 조회 ────────────────────
@@ -1036,12 +1087,13 @@ async function searchByDate(form) {
       return;
     }
     resultEl.innerHTML = results.map(r => `
-      <div class="sresult" onclick='linkIt("${form}",${JSON.stringify(r)})'>
+      <div class="sresult" ondblclick='linkIt("${form}",${JSON.stringify(r)})' onclick='previewItem("${form}",${JSON.stringify(r)})' style="cursor:pointer">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <span style="font-weight:700;font-family:var(--mono);font-size:13px">${r.code}</span>
           <span style="font-size:11px;background:var(--in-bg);color:var(--in);padding:2px 7px;border-radius:4px;font-weight:700">보유</span>
         </div>
         <div class="sresult-sub">${r.name} · ${r.store||''} · ${r.zone||''}</div>
+        <div style="font-size:10px;color:var(--g400);margin-top:3px">👆 한 번 → 미리보기 &nbsp;|&nbsp; 👆👆 두 번 → 바로 연결</div>
       </div>`).join('');
   } catch(e) {
     if (btn) { btn.textContent = '조회'; btn.disabled = false; }
@@ -1079,6 +1131,11 @@ async function relabelSearch() {
   } catch(e) { showT('조회 실패. 다시 시도해주세요.','err'); }
 }
 
+
+// 라벨 화면 리사이즈 대응
+window.addEventListener('resize', () => {
+  if (document.getElementById('label-screen').classList.contains('show')) scaleLabel();
+});
 </script>
 </body>
 </html>
