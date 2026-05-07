@@ -252,14 +252,14 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
   <div class="card">
     <div class="card-ttl"><span class="dot in"></span>수량 <span class="req">*</span></div>
     <div class="qty-row">
-      <button class="qty-btn" onclick="cqty(-1)">−</button>
+      <button class="qty-btn" onclick="cqty('in',-1)">−</button>
       <input class="qty-inp" id="in-qty" type="number" value="1" min="1">
-      <button class="qty-btn" onclick="cqty(1)">+</button>
+      <button class="qty-btn" onclick="cqty('in',1)">+</button>
     </div>
     <div class="qty-hint">
-      💡 대품목 → 수량 1개로 등록하고 라벨 1장 부착<br>
-      📦 박스 안에 여러 개가 있는 경우 → 실제 수량 입력, 라벨은 박스에 1장 부착<br>
-      🔖 세트 물품 → 관리번호 1개로 등록하고 같은 번호 라벨을 여러 장 출력해 각 구성품에 부착
+      📺 모니터 등 대품목 → 수량 1 / 라벨 1장<br>
+      📦 박스 품목 → 수량: 내용물 수량 / 라벨 1장<br>
+      🔖 세트 → 수량 1 / 라벨을 세트 구성품 각각에 부착
     </div>
   </div>
 
@@ -306,22 +306,27 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
   <!-- 품목 연결 -->
   <div class="search-card">
     <div class="search-ttl">📋 출고 품목 연결</div>
-    <div class="stabs">
-      <button class="stab active" id="stab-out-code" onclick="swTab('out','code')">번호로 찾기</button>
-      <button class="stab"        id="stab-out-name" onclick="swTab('out','name')">집기명 검색</button>
-    </div>
     <div id="out-tab-code">
-      <label class="lbl">관리번호</label>
-      <input class="inp mono" id="out-code" type="text" placeholder="예: 20260506_01" autocomplete="off" oninput="onCode('out',this.value)">
+      <label class="lbl">날짜 또는 관리번호 입력</label>
+      <div style="display:flex;gap:8px">
+        <input class="inp mono" id="out-code" type="text" placeholder="예: 20260501 또는 20260501_01" autocomplete="off" oninput="onCodeInput('out',this.value)" style="flex:1">
+        <button onclick="searchByDate('out')" style="padding:0 14px;border:1.5px solid var(--accent);border-radius:var(--r-sm);background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">조회</button>
+      </div>
+      <div class="search-results" id="out-date-results" style="margin-top:6px"></div>
     </div>
-    <div id="out-tab-name" style="display:none">
-      <label class="lbl">집기명 검색</label>
-      <input class="inp" id="out-nsearch" type="text" placeholder="집기 종류 입력..." autocomplete="off" oninput="onNsearch('out',this.value)">
-      <div class="search-results" id="out-results"></div>
-    </div>
+
     <div class="linked-preview" id="out-preview">
       <div class="linked-badge">✅ 연결됨</div>
       <div class="linked-rows" id="out-prev-rows"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-ttl"><span class="dot out"></span>출고 수량 <span class="req">*</span></div>
+    <div class="qty-row">
+      <button class="qty-btn" onclick="cqty('out',-1)">−</button>
+      <input class="qty-inp" id="out-qty" type="number" value="1" min="1">
+      <button class="qty-btn" onclick="cqty('out',1)">+</button>
     </div>
   </div>
 
@@ -375,22 +380,27 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
   <!-- 품목 연결 -->
   <div class="search-card dis">
     <div class="search-ttl dis">🗑 폐기 품목 연결</div>
-    <div class="stabs">
-      <button class="stab dis-t active" id="stab-dis-code" onclick="swTab('dis','code')">번호로 찾기</button>
-      <button class="stab dis-t"        id="stab-dis-name" onclick="swTab('dis','name')">집기명 검색</button>
-    </div>
     <div id="dis-tab-code">
-      <label class="lbl">관리번호</label>
-      <input class="inp mono" id="dis-code" type="text" placeholder="예: 20260506_01" autocomplete="off" oninput="onCode('dis',this.value)">
+      <label class="lbl">날짜 또는 관리번호 입력</label>
+      <div style="display:flex;gap:8px">
+        <input class="inp mono" id="dis-code" type="text" placeholder="예: 20260501 또는 20260501_01" autocomplete="off" oninput="onCodeInput('dis',this.value)" style="flex:1">
+        <button onclick="searchByDate('dis')" style="padding:0 14px;border:1.5px solid var(--dis);border-radius:var(--r-sm);background:var(--dis);color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">조회</button>
+      </div>
+      <div class="search-results" id="dis-date-results" style="margin-top:6px"></div>
     </div>
-    <div id="dis-tab-name" style="display:none">
-      <label class="lbl">집기명 검색</label>
-      <input class="inp" id="dis-nsearch" type="text" placeholder="집기 종류 입력..." autocomplete="off" oninput="onNsearch('dis',this.value)">
-      <div class="search-results" id="dis-results"></div>
-    </div>
+
     <div class="linked-preview dis-t" id="dis-preview">
       <div class="linked-badge dis-t">✅ 연결됨</div>
       <div class="linked-rows" id="dis-prev-rows"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-ttl"><span class="dot dis"></span>폐기 수량 <span class="req">*</span></div>
+    <div class="qty-row">
+      <button class="qty-btn" onclick="cqty('dis',-1)">−</button>
+      <input class="qty-inp" id="dis-qty" type="number" value="1" min="1">
+      <button class="qty-btn" onclick="cqty('dis',1)">+</button>
     </div>
   </div>
 
@@ -677,8 +687,9 @@ function selReason(val, el) {
 }
 
 // ── 수량 ──────────────────────────────────────────────────────
-function cqty(d) {
-  const el = document.getElementById('in-qty');
+function cqty(form, d) {
+  const id = form === 'out' ? 'out-qty' : form === 'dis' ? 'dis-qty' : 'in-qty';
+  const el = document.getElementById(id);
   el.value = Math.max(1, (parseInt(el.value)||1) + d);
 }
 
@@ -701,6 +712,64 @@ async function onCode(form, val) {
     if (data && data.found) linkIt(form, data.item);
     else { linked=null; document.getElementById(form+'-preview').classList.remove('show'); }
   } catch(e) {}
+}
+
+// ── 입력 감지: 완전한 관리번호면 바로 조회, 날짜만이면 대기 ──
+function onCodeInput(form, val) {
+  val = val.trim();
+  const resultEl = document.getElementById(form+'-date-results');
+  // 완전한 관리번호 형식이면 바로 단건 조회
+  if (/^\d{8}_\d{2,}$/.test(val)) {
+    resultEl.style.display = 'none';
+    onCode(form, val);
+  } else {
+    // 날짜만 입력된 경우 미리보기 숨김
+    linked = null;
+    document.getElementById(form+'-preview').classList.remove('show');
+  }
+}
+
+// ── 날짜로 목록 조회 ──────────────────────────────────────────
+async function searchByDate(form) {
+  const val = document.getElementById(form+'-code').value.trim();
+  const resultEl = document.getElementById(form+'-date-results');
+
+  if (!val) { showT('날짜 또는 관리번호를 입력해주세요','err'); return; }
+
+  // 완전한 관리번호면 단건 조회
+  if (/^\d{8}_\d{2,}$/.test(val)) {
+    onCode(form, val);
+    return;
+  }
+
+  // 날짜 형식 파싱 (20260501 or 26.05.01)
+  const clean = val.replace(/[^0-9]/g,'');
+  const dateKey = clean.length === 6 ? '20'+clean : clean.length === 8 ? clean : null;
+  if (!dateKey) { showT('날짜 형식이 올바르지 않아요 (예: 20260501)','err'); return; }
+
+  resultEl.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:var(--g400)">조회 중...</div>';
+  resultEl.style.display = 'block';
+
+  try {
+    const data = await fetchGET(`${APPS_URL}?action=searchByDate&date=${encodeURIComponent(dateKey)}`);
+    const results = (data && data.results) ? data.results : [];
+
+    if (!results.length) {
+      resultEl.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:var(--g400)">해당 날짜의 보유 품목이 없어요</div>';
+      return;
+    }
+
+    resultEl.innerHTML = results.map(r => `
+      <div class="sresult" onclick='linkIt("${form}",${JSON.stringify(r)})'>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-weight:700;font-family:var(--mono);font-size:13px">${r.code}</span>
+          <span style="font-size:11px;background:var(--in-bg);color:var(--in);padding:2px 7px;border-radius:4px;font-weight:700">${r.status||'보유'}</span>
+        </div>
+        <div class="sresult-sub">${r.name} · ${r.store||''} · ${r.zone||''}</div>
+      </div>`).join('');
+  } catch(e) {
+    resultEl.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:var(--out)">조회 실패. 다시 시도해주세요.</div>';
+  }
 }
 
 // ── 집기명 검색 ───────────────────────────────────────────────
@@ -803,7 +872,7 @@ async function submit() {
       worker:     document.getElementById('out-worker').value.trim(),
       requester:  document.getElementById('out-requester').value.trim(),
       category:   linked.name,
-      qty:        linked.qty || '1',
+      qty:        document.getElementById('out-qty').value || linked.qty || '1',
       spec:       linked.spec || '',
       zone:       linked.zone || '',
       memo:       document.getElementById('out-dest').value.trim(),
@@ -819,7 +888,7 @@ async function submit() {
       worker:     document.getElementById('dis-worker').value.trim(),
       requester:  document.getElementById('dis-requester').value.trim(),
       category:   linked.name,
-      qty:        linked.qty || '1',
+      qty:        document.getElementById('dis-qty').value || linked.qty || '1',
       spec:       linked.spec || '',
       zone:       linked.zone || '',
       memo:       document.getElementById('dis-reason').value,
@@ -949,6 +1018,8 @@ function nextE() {
   document.getElementById('in-zone').value='';
   document.getElementById('dis-reason').value='';
   document.getElementById('in-qty').value='1';
+  const oq = document.getElementById('out-qty'); if(oq) oq.value='1';
+  const dq = document.getElementById('dis-qty'); if(dq) dq.value='1';
   setToday('in-date');
   setToday('out-date');
   setToday('dis-date');
