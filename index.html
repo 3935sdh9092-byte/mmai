@@ -66,9 +66,9 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 
 /* 수량 */
 .qty-row{display:flex;align-items:center;gap:8px}
-.qty-btn{width:46px;height:46px;border:1.5px solid var(--g200);border-radius:var(--r-sm);background:var(--g50);font-size:22px;color:var(--g600);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
+.qty-btn{width:40px;height:40px;border:1.5px solid var(--g200);border-radius:var(--r-sm);background:var(--g50);font-size:20px;color:var(--g600);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
 .qty-btn:active{transform:scale(.9);background:var(--g100)}
-.qty-inp{flex:1;text-align:center;font-size:20px;font-weight:700;border:1.5px solid var(--g200);border-radius:var(--r-sm);padding:10px;background:var(--g50);color:var(--g800);font-family:var(--font);outline:none;-webkit-appearance:none}
+.qty-inp{width:60px;text-align:center;font-size:16px;font-weight:700;border:1.5px solid var(--g200);border-radius:var(--r-sm);padding:8px 4px;background:var(--g50);color:var(--g800);font-family:var(--font);outline:none;-webkit-appearance:none}
 .qty-inp:focus{border-color:var(--accent);background:var(--white)}
 .qty-hint{margin-top:8px;font-size:11px;color:var(--g400);line-height:1.6}
 
@@ -181,12 +181,24 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 <div class="hdr">
   <div class="hdr-top">
     <div class="logo">1호<em>창고</em></div>
-    <div class="date-pill" id="date-pill"></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onclick="toggleRelabel()" style="font-size:11px;padding:4px 10px;border:1.5px solid var(--g200);border-radius:20px;background:var(--white);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">🏷 라벨재출력</button>
+      <div class="date-pill" id="date-pill"></div>
+    </div>
   </div>
   <div class="mode-toggle">
     <button class="mode-btn on-in" id="btn-in"  onclick="setMode('in')">📦 입고</button>
     <button class="mode-btn"       id="btn-out" onclick="setMode('out')">📤 출고</button>
     <button class="mode-btn"       id="btn-dis" onclick="setMode('dis')">🗑 폐기</button>
+  </div>
+</div>
+
+<!-- 라벨 재출력 바 -->
+<div id="relabel-bar" style="display:none;background:#f0f4ff;border-bottom:1px solid #c5d3f0;padding:8px 16px">
+  <div style="display:flex;gap:8px;align-items:center">
+    <input class="inp mono" id="relabel-code" type="text" placeholder="관리번호 입력 (예: 20260507_01)" style="flex:1;font-size:13px;padding:8px 10px">
+    <button onclick="relabelSearch()" style="padding:8px 14px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">라벨 출력</button>
+    <button onclick="document.getElementById('relabel-bar').style.display='none'" style="padding:8px 10px;border:1.5px solid var(--g200);border-radius:8px;background:var(--white);font-size:13px;cursor:pointer">✕</button>
   </div>
 </div>
 
@@ -212,7 +224,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     <div class="card-ttl"><span class="dot in"></span>기본 정보</div>
     <div class="field">
       <label class="lbl">집기 종류(대분류) <span class="req">*</span></label>
-      <input class="inp" id="in-category" type="text" placeholder="예: 모니터, 러그, 카펫, 조명, 케노샤, 테크니컬장, 카운터" autocomplete="off">
+      <input class="inp" id="in-category" type="text" placeholder="예: 모니터, 러그, 롤카펫, 조명, 케노샤, 테크니컬장, 카운터" autocomplete="off">
     </div>
     <div class="field">
       <label class="lbl">회수일 <span class="req">*</span></label>
@@ -268,7 +280,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     <div class="card-ttl"><span class="dot in"></span>상세 정보</div>
     <div class="field">
       <label class="lbl">사양 <span class="req">*</span></label>
-      <input class="inp" id="in-spec" type="text" placeholder="예: 화이트 안정기O, SWAN/RQ309/PINK, 계단주의, 제조년월, 모델코드, S/N">
+      <textarea class="ta" id="in-spec" rows="4" style="min-height:90px" placeholder="예: SWAN / RQ309 / PINK, 삼성, 제조년월, 모델코드, S/N, 화이트 안정기O, 블랙 안정기X, 이불걸이 화이트, 베개받침대 아연, 2구 콘센트, 롤카펫"></textarea>
     </div>
     <div class="field">
       <label class="lbl">사이즈 <span class="req">*</span></label>
@@ -314,7 +326,6 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
       </div>
       <div class="search-results" id="out-date-results" style="margin-top:6px"></div>
     </div>
-
     <div class="linked-preview" id="out-preview">
       <div class="linked-badge">✅ 연결됨</div>
       <div class="linked-rows" id="out-prev-rows"></div>
@@ -388,7 +399,6 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
       </div>
       <div class="search-results" id="dis-date-results" style="margin-top:6px"></div>
     </div>
-
     <div class="linked-preview dis-t" id="dis-preview">
       <div class="linked-badge dis-t">✅ 연결됨</div>
       <div class="linked-rows" id="dis-prev-rows"></div>
@@ -710,66 +720,8 @@ async function onCode(form, val) {
   try {
     const data = await fetchGET(`${APPS_URL}?action=getByCode&code=${encodeURIComponent(val)}`);
     if (data && data.found) linkIt(form, data.item);
-    else { linked=null; document.getElementById(form+'-preview').classList.remove('show'); }
+    else { linked=null; document.getElementById(form+'-preview').classList.remove('show'); if(data&&data.message) showT(data.message,'err'); }
   } catch(e) {}
-}
-
-// ── 입력 감지: 완전한 관리번호면 바로 조회, 날짜만이면 대기 ──
-function onCodeInput(form, val) {
-  val = val.trim();
-  const resultEl = document.getElementById(form+'-date-results');
-  // 완전한 관리번호 형식이면 바로 단건 조회
-  if (/^\d{8}_\d{2,}$/.test(val)) {
-    resultEl.style.display = 'none';
-    onCode(form, val);
-  } else {
-    // 날짜만 입력된 경우 미리보기 숨김
-    linked = null;
-    document.getElementById(form+'-preview').classList.remove('show');
-  }
-}
-
-// ── 날짜로 목록 조회 ──────────────────────────────────────────
-async function searchByDate(form) {
-  const val = document.getElementById(form+'-code').value.trim();
-  const resultEl = document.getElementById(form+'-date-results');
-
-  if (!val) { showT('날짜 또는 관리번호를 입력해주세요','err'); return; }
-
-  // 완전한 관리번호면 단건 조회
-  if (/^\d{8}_\d{2,}$/.test(val)) {
-    onCode(form, val);
-    return;
-  }
-
-  // 날짜 형식 파싱 (20260501 or 26.05.01)
-  const clean = val.replace(/[^0-9]/g,'');
-  const dateKey = clean.length === 6 ? '20'+clean : clean.length === 8 ? clean : null;
-  if (!dateKey) { showT('날짜 형식이 올바르지 않아요 (예: 20260501)','err'); return; }
-
-  resultEl.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:var(--g400)">조회 중...</div>';
-  resultEl.style.display = 'block';
-
-  try {
-    const data = await fetchGET(`${APPS_URL}?action=searchByDate&date=${encodeURIComponent(dateKey)}`);
-    const results = (data && data.results) ? data.results : [];
-
-    if (!results.length) {
-      resultEl.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:var(--g400)">해당 날짜의 보유 품목이 없어요</div>';
-      return;
-    }
-
-    resultEl.innerHTML = results.map(r => `
-      <div class="sresult" onclick='linkIt("${form}",${JSON.stringify(r)})'>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-weight:700;font-family:var(--mono);font-size:13px">${r.code}</span>
-          <span style="font-size:11px;background:var(--in-bg);color:var(--in);padding:2px 7px;border-radius:4px;font-weight:700">${r.status||'보유'}</span>
-        </div>
-        <div class="sresult-sub">${r.name} · ${r.store||''} · ${r.zone||''}</div>
-      </div>`).join('');
-  } catch(e) {
-    resultEl.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:var(--out)">조회 실패. 다시 시도해주세요.</div>';
-  }
 }
 
 // ── 집기명 검색 ───────────────────────────────────────────────
@@ -872,7 +824,7 @@ async function submit() {
       worker:     document.getElementById('out-worker').value.trim(),
       requester:  document.getElementById('out-requester').value.trim(),
       category:   linked.name,
-      qty:        document.getElementById('out-qty').value || linked.qty || '1',
+      qty:        linked.qty || '1',
       spec:       linked.spec || '',
       zone:       linked.zone || '',
       memo:       document.getElementById('out-dest').value.trim(),
@@ -888,7 +840,7 @@ async function submit() {
       worker:     document.getElementById('dis-worker').value.trim(),
       requester:  document.getElementById('dis-requester').value.trim(),
       category:   linked.name,
-      qty:        document.getElementById('dis-qty').value || linked.qty || '1',
+      qty:        linked.qty || '1',
       spec:       linked.spec || '',
       zone:       linked.zone || '',
       memo:       document.getElementById('dis-reason').value,
@@ -1018,8 +970,8 @@ function nextE() {
   document.getElementById('in-zone').value='';
   document.getElementById('dis-reason').value='';
   document.getElementById('in-qty').value='1';
-  const oq = document.getElementById('out-qty'); if(oq) oq.value='1';
-  const dq = document.getElementById('dis-qty'); if(dq) dq.value='1';
+  const oq=document.getElementById('out-qty');if(oq)oq.value='1';
+  const dq=document.getElementById('dis-qty');if(dq)dq.value='1';
   setToday('in-date');
   setToday('out-date');
   setToday('dis-date');
@@ -1039,6 +991,94 @@ function showT(msg, type='') {
   t.className = `toast show${type?' '+type:''}`;
   setTimeout(() => t.className='toast', 2800);
 }
+
+// ── 입력 감지: 완전한 관리번호면 바로 조회 ────────────────────
+function onCodeInput(form, val) {
+  val = val.trim();
+  const resultEl = document.getElementById(form+'-date-results');
+  if (/^\d{8}_\d{2,}$/.test(val)) {
+    if(resultEl) resultEl.style.display = 'none';
+    onCode(form, val);
+  } else {
+    linked = null;
+    document.getElementById(form+'-preview').classList.remove('show');
+  }
+}
+
+// ── 날짜로 목록 조회 ──────────────────────────────────────────
+async function searchByDate(form) {
+  const val = document.getElementById(form+'-code').value.trim();
+  const resultEl = document.getElementById(form+'-date-results');
+  const btn = document.querySelector(`button[onclick="searchByDate('${form}')"]`);
+
+  if (!val) { showT('날짜 또는 관리번호를 입력해주세요','err'); return; }
+
+  if (/^\d{8}_\d{2,}$/.test(val)) {
+    onCode(form, val);
+    return;
+  }
+
+  const clean = val.replace(/[^0-9]/g,'');
+  const dateKey = clean.length === 6 ? '20'+clean : clean.length === 8 ? clean : null;
+  if (!dateKey) { showT('날짜 형식이 올바르지 않아요 (예: 20260501)','err'); return; }
+
+  if (btn) { btn.textContent = '조회 중...'; btn.disabled = true; }
+  resultEl.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:var(--g400);display:flex;align-items:center;gap:8px"><span style="display:inline-block;width:14px;height:14px;border:2px solid var(--g200);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite"></span>조회 중...</div>';
+  resultEl.style.display = 'block';
+
+  try {
+    const data = await fetchGET(`${APPS_URL}?action=searchByDate&date=${encodeURIComponent(dateKey)}`);
+    const results = (data && data.results) ? data.results : [];
+    if (btn) { btn.textContent = '조회'; btn.disabled = false; }
+
+    if (!results.length) {
+      resultEl.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:var(--g400)">해당 날짜의 보유 품목이 없어요</div>';
+      return;
+    }
+    resultEl.innerHTML = results.map(r => `
+      <div class="sresult" onclick='linkIt("${form}",${JSON.stringify(r)})'>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-weight:700;font-family:var(--mono);font-size:13px">${r.code}</span>
+          <span style="font-size:11px;background:var(--in-bg);color:var(--in);padding:2px 7px;border-radius:4px;font-weight:700">보유</span>
+        </div>
+        <div class="sresult-sub">${r.name} · ${r.store||''} · ${r.zone||''}</div>
+      </div>`).join('');
+  } catch(e) {
+    if (btn) { btn.textContent = '조회'; btn.disabled = false; }
+    resultEl.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:var(--out)">조회 실패. 다시 시도해주세요.</div>';
+  }
+}
+
+// ── 라벨 재출력 ───────────────────────────────────────────────
+function toggleRelabel() {
+  const bar = document.getElementById('relabel-bar');
+  bar.style.display = bar.style.display === 'none' ? 'block' : 'none';
+  if (bar.style.display === 'block') document.getElementById('relabel-code').focus();
+}
+
+async function relabelSearch() {
+  const code = document.getElementById('relabel-code').value.trim();
+  if (!code) { showT('관리번호를 입력해주세요','err'); return; }
+  try {
+    const data = await fetchGET(`${APPS_URL}?action=getByCode&code=${encodeURIComponent(code)}`);
+    if (data && data.found) {
+      const item = data.item;
+      window._lastDone = {
+        code: item.code, mode: '입고',
+        store: item.store||'', category: item.name||'',
+        spec: item.spec||'', size: item.size||'',
+        parts: item.parts||'', zone: item.zone||'',
+        qty: item.qty||'1', note: '',
+        date: item.date||'', worker: item.worker||'',
+      };
+      document.getElementById('relabel-bar').style.display = 'none';
+      showLabel();
+    } else {
+      showT(data && data.message ? data.message : '해당 관리번호를 찾을 수 없어요','err');
+    }
+  } catch(e) { showT('조회 실패. 다시 시도해주세요.','err'); }
+}
+
 </script>
 </body>
 </html>
