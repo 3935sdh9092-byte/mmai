@@ -53,11 +53,14 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 
 /* 날짜 */
 .date-row{display:flex;gap:8px}
-.date-wheel{flex:1;display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:6px;border:1.5px solid var(--g200);border-radius:var(--r-sm);padding:6px 8px;background:var(--g50);transition:border-color .15s,box-shadow .15s}
+.date-wheel{flex:1;display:grid;grid-template-columns:repeat(3,1fr);align-items:center;gap:8px;border:1.5px solid var(--g200);border-radius:var(--r-sm);padding:6px 10px;background:var(--g50);transition:border-color .15s,box-shadow .15s}
 .date-wheel:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,79,138,.1);background:var(--white)}
-.date-part{width:100%;border:none;background:transparent;text-align:center;font-family:var(--mono);font-size:18px;font-weight:700;color:var(--g800);outline:none;padding:6px 0}
+.date-unit{position:relative;display:grid;grid-template-rows:16px 32px 16px;align-items:center}
+.date-unit:not(:last-child)::after{content:".";position:absolute;right:-7px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:18px;font-weight:700;color:var(--g400)}
+.date-step{height:16px;border:none;background:transparent;color:var(--g400);font-size:12px;line-height:1;cursor:pointer;border-radius:4px}
+.date-step:active{background:var(--g100);color:var(--accent)}
+.date-part{width:100%;border:none;background:transparent;text-align:center;font-family:var(--mono);font-size:18px;font-weight:700;color:var(--g800);outline:none;padding:2px 0;cursor:default}
 .date-part::placeholder{color:var(--g400)}
-.date-dot{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--g400)}
 .date-hidden{display:none}
 .btn-today{padding:12px 14px;border:1.5px solid var(--g200);border-radius:var(--r-sm);background:var(--g50);font-family:var(--font);font-size:13px;font-weight:700;color:var(--g600);cursor:pointer;white-space:nowrap;flex-shrink:0}
 
@@ -216,11 +219,21 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
       <div class="date-row">
         <input class="date-hidden" id="in-date" type="hidden">
         <div class="date-wheel" data-date-id="in-date">
-          <input class="date-part" id="in-date-yy" type="text" inputmode="numeric" maxlength="2" placeholder="YY" aria-label="회수 연도">
-          <span class="date-dot">.</span>
-          <input class="date-part" id="in-date-mm" type="text" inputmode="numeric" maxlength="2" placeholder="MM" aria-label="회수 월">
-          <span class="date-dot">.</span>
-          <input class="date-part" id="in-date-dd" type="text" inputmode="numeric" maxlength="2" placeholder="DD" aria-label="회수 일">
+          <div class="date-unit">
+            <button class="date-step" type="button" onclick="stepDatePart('in-date','yy',1)">▲</button>
+            <input class="date-part" id="in-date-yy" type="text" readonly placeholder="YY" aria-label="회수 연도">
+            <button class="date-step" type="button" onclick="stepDatePart('in-date','yy',-1)">▼</button>
+          </div>
+          <div class="date-unit">
+            <button class="date-step" type="button" onclick="stepDatePart('in-date','mm',1)">▲</button>
+            <input class="date-part" id="in-date-mm" type="text" readonly placeholder="MM" aria-label="회수 월">
+            <button class="date-step" type="button" onclick="stepDatePart('in-date','mm',-1)">▼</button>
+          </div>
+          <div class="date-unit">
+            <button class="date-step" type="button" onclick="stepDatePart('in-date','dd',1)">▲</button>
+            <input class="date-part" id="in-date-dd" type="text" readonly placeholder="DD" aria-label="회수 일">
+            <button class="date-step" type="button" onclick="stepDatePart('in-date','dd',-1)">▼</button>
+          </div>
         </div>
         <button class="btn-today" onclick="setToday('in-date')">오늘</button>
       </div>
@@ -321,11 +334,21 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     <div class="date-row">
       <input class="date-hidden" id="out-date" type="hidden">
       <div class="date-wheel" data-date-id="out-date">
-        <input class="date-part" id="out-date-yy" type="text" inputmode="numeric" maxlength="2" placeholder="YY" aria-label="출고 연도">
-        <span class="date-dot">.</span>
-        <input class="date-part" id="out-date-mm" type="text" inputmode="numeric" maxlength="2" placeholder="MM" aria-label="출고 월">
-        <span class="date-dot">.</span>
-        <input class="date-part" id="out-date-dd" type="text" inputmode="numeric" maxlength="2" placeholder="DD" aria-label="출고 일">
+        <div class="date-unit">
+          <button class="date-step" type="button" onclick="stepDatePart('out-date','yy',1)">▲</button>
+          <input class="date-part" id="out-date-yy" type="text" readonly placeholder="YY" aria-label="출고 연도">
+          <button class="date-step" type="button" onclick="stepDatePart('out-date','yy',-1)">▼</button>
+        </div>
+        <div class="date-unit">
+          <button class="date-step" type="button" onclick="stepDatePart('out-date','mm',1)">▲</button>
+          <input class="date-part" id="out-date-mm" type="text" readonly placeholder="MM" aria-label="출고 월">
+          <button class="date-step" type="button" onclick="stepDatePart('out-date','mm',-1)">▼</button>
+        </div>
+        <div class="date-unit">
+          <button class="date-step" type="button" onclick="stepDatePart('out-date','dd',1)">▲</button>
+          <input class="date-part" id="out-date-dd" type="text" readonly placeholder="DD" aria-label="출고 일">
+          <button class="date-step" type="button" onclick="stepDatePart('out-date','dd',-1)">▼</button>
+        </div>
       </div>
       <button class="btn-today" onclick="setToday('out-date')">오늘</button>
     </div>
@@ -381,6 +404,30 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
       <button class="zone-btn" style="font-size:13px;padding:12px 8px" onclick="selReason('기타',this)">기타</button>
     </div>
     <input type="hidden" id="dis-reason" value="">
+  </div>
+  <div class="card">
+    <div class="card-ttl"><span class="dot dis"></span>폐기일 <span class="req">*</span></div>
+    <div class="date-row">
+      <input class="date-hidden" id="dis-date" type="hidden">
+      <div class="date-wheel" data-date-id="dis-date">
+        <div class="date-unit">
+          <button class="date-step" type="button" onclick="stepDatePart('dis-date','yy',1)">▲</button>
+          <input class="date-part" id="dis-date-yy" type="text" readonly placeholder="YY" aria-label="폐기 연도">
+          <button class="date-step" type="button" onclick="stepDatePart('dis-date','yy',-1)">▼</button>
+        </div>
+        <div class="date-unit">
+          <button class="date-step" type="button" onclick="stepDatePart('dis-date','mm',1)">▲</button>
+          <input class="date-part" id="dis-date-mm" type="text" readonly placeholder="MM" aria-label="폐기 월">
+          <button class="date-step" type="button" onclick="stepDatePart('dis-date','mm',-1)">▼</button>
+        </div>
+        <div class="date-unit">
+          <button class="date-step" type="button" onclick="stepDatePart('dis-date','dd',1)">▲</button>
+          <input class="date-part" id="dis-date-dd" type="text" readonly placeholder="DD" aria-label="폐기 일">
+          <button class="date-step" type="button" onclick="stepDatePart('dis-date','dd',-1)">▼</button>
+        </div>
+      </div>
+      <button class="btn-today" onclick="setToday('dis-date')">오늘</button>
+    </div>
   </div>
   <div class="card">
     <div class="card-ttl"><span class="dot dis"></span>담당자 <span class="req">*</span></div>
@@ -522,6 +569,22 @@ function syncDate(id) {
   if (!yy || !mm || !dd || !target) return;
   target.value = yy.value && mm.value && dd.value ? `${yy.value}.${mm.value}.${dd.value}` : '';
 }
+function stepDatePart(id, part, delta) {
+  const el = document.getElementById(id + '-' + part);
+  if (!el) return;
+  const min = part === 'yy' ? 0 : 1;
+  const max = part === 'yy' ? 99 : part === 'mm' ? 12 : 31;
+  let next = (parseInt(el.value, 10) || min) + delta;
+  if (next > max) next = min;
+  if (next < min) next = max;
+  el.value = String(next).padStart(2, '0');
+  if (part === 'dd') el.value = clampDatePart(id, part, el.value);
+  if (part === 'yy' || part === 'mm') {
+    const dd = document.getElementById(id + '-dd');
+    if (dd && dd.value) dd.value = clampDatePart(id, 'dd', dd.value);
+  }
+  syncDate(id);
+}
 function bindDateWheel(id) {
   const parts = ['yy', 'mm', 'dd'];
   parts.forEach((part, idx) => {
@@ -544,27 +607,16 @@ function bindDateWheel(id) {
     el.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
         e.preventDefault();
-        const min = part === 'yy' ? 0 : 1;
-        const max = part === 'yy' ? 99 : part === 'mm' ? 12 : 31;
-        const delta = e.key === 'ArrowUp' ? 1 : -1;
-        let next = (parseInt(el.value, 10) || min) + delta;
-        if (next > max) next = min;
-        if (next < min) next = max;
-        el.value = String(next).padStart(2, '0');
-        if (part === 'dd') el.value = clampDatePart(id, part, el.value);
-        if (part === 'yy' || part === 'mm') {
-          const dd = document.getElementById(id + '-dd');
-          if (dd && dd.value) dd.value = clampDatePart(id, 'dd', dd.value);
-        }
-        syncDate(id);
+        stepDatePart(id, part, e.key === 'ArrowUp' ? 1 : -1);
       }
     });
   });
 }
 function setToday(id) { setDateParts(id, getShortDate()); }
-['in-date','out-date'].forEach(bindDateWheel);
+['in-date','out-date','dis-date'].forEach(bindDateWheel);
 setToday('in-date');
 setToday('out-date');
+setToday('dis-date');
 
 // ── JSONP ──────────────────────────────────────────────────────
 function fetchGET(url) {
@@ -713,7 +765,8 @@ function validate() {
   if (mode === 'dis') {
     if (!linked) { showT('폐기할 품목을 연결해주세요','err'); return false; }
     if (!document.getElementById('dis-reason').value) { showT('폐기 사유를 선택해주세요','err'); return false; }
-    return req('dis-worker','폐기 담당자를 입력해주세요') &&
+    return req('dis-date','폐기일을 입력해주세요') &&
+           req('dis-worker','폐기 담당자를 입력해주세요') &&
            req('dis-requester','폐기 요청자를 입력해주세요');
   }
   return true;
@@ -762,7 +815,7 @@ async function submit() {
       code:       linked.code,
       linkedCode: linked.code,
       store:      linked.store || '',
-      date:       getShortDate(),
+      date:       document.getElementById('dis-date').value.trim(),
       worker:     document.getElementById('dis-worker').value.trim(),
       requester:  document.getElementById('dis-requester').value.trim(),
       category:   linked.name,
@@ -898,6 +951,7 @@ function nextE() {
   document.getElementById('in-qty').value='1';
   setToday('in-date');
   setToday('out-date');
+  setToday('dis-date');
   ['out-preview','dis-preview'].forEach(id => document.getElementById(id).classList.remove('show'));
   window.scrollTo({top:0,behavior:'smooth'});
 }
