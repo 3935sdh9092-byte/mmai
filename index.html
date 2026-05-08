@@ -115,6 +115,21 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .btn-sub.dis-mode{background:var(--dis);box-shadow:0 3px 14px var(--dis-glow)}
 .btn-sub:active{transform:scale(.97)}.btn-sub:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
+
+/* ✏️ 수정 화면 */
+.edit-screen{display:none;position:fixed;inset:0;background:var(--white);z-index:260;flex-direction:column;overflow:hidden}
+.edit-screen.show{display:flex}
+.edit-hdr{background:#b85c1e;padding:14px 18px 10px;flex-shrink:0}
+.edit-hdr-top{display:flex;align-items:center;justify-content:space-between}
+.edit-hdr-title{color:#fff;font-size:15px;font-weight:900}
+.edit-hdr-code{color:rgba(255,255,255,.75);font-size:11px;font-family:var(--mono);margin-top:3px}
+.edit-close{width:36px;height:36px;border:none;background:rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.edit-body{flex:1;overflow-y:auto;padding:12px 14px 110px;-webkit-overflow-scrolling:touch}
+.edit-submit-bar{display:flex;gap:8px;padding:12px 14px;background:var(--white);border-top:1px solid var(--g100);position:absolute;bottom:0;left:0;right:0;z-index:10}
+.btn-edit-save{flex:1;height:52px;border:none;border-radius:var(--r);font-family:var(--font);font-size:16px;font-weight:700;color:#fff;cursor:pointer;background:#b85c1e;box-shadow:0 3px 14px rgba(184,92,30,.3);transition:all .2s}
+.btn-edit-save:active{transform:scale(.97)}
+.btn-edit-del{width:52px;height:52px;border:1.5px solid var(--out);border-radius:var(--r);background:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
 /* 매뉴얼 화면 */
 .manual-screen{display:none;position:fixed;inset:0;background:var(--white);z-index:250;flex-direction:column;overflow:hidden}
 .manual-screen.show{display:flex}
@@ -244,6 +259,14 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
   </div>
 </div>
 
+<!-- 수정 바 -->
+<div id="edit-bar" style="display:none;background:#fff8f3;border-bottom:2px solid #f0c9a0;padding:8px 16px">
+  <div style="display:flex;gap:8px;align-items:center">
+    <input class="inp mono" id="edit-code-input" type="text" placeholder="수정할 관리번호 (예: 20260507_01)" style="flex:1;font-size:13px;padding:8px 10px">
+    <button onclick="editSearch()" style="padding:8px 14px;border:none;border-radius:8px;background:#b85c1e;color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">조회</button>
+    <button onclick="toggleEditBar()" style="padding:8px 10px;border:1.5px solid var(--g200);border-radius:8px;background:var(--white);font-size:13px;cursor:pointer">✕</button>
+  </div>
+</div>
 <!-- 라벨 재출력 바 -->
 <div id="relabel-bar" style="display:none;background:#f0f4ff;border-bottom:1px solid #c5d3f0;padding:8px 16px">
   <div style="display:flex;gap:8px;align-items:center">
@@ -327,11 +350,11 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
       <textarea class="ta" id="in-spec" rows="4" style="min-height:90px" placeholder="예: SWAN / RQ309 / PINK, 삼성, 제조년월, 모델코드, S/N, 화이트 안정기O, 블랙 안정기X, 이불걸이 화이트, 베개받침대 아연, 2구 콘센트, 롤카펫"></textarea>
     </div>
     <div class="field">
-      <label class="lbl">사이즈 <span class="req">*</span></label>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px"><label class="lbl" style="margin-bottom:0">사이즈 <span class="req">*</span></label><button type="button" onclick="setNone('in-size')" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">없음</button></div>
       <input class="inp" id="in-size" type="text" placeholder="예: 44인치, 3,000mm x 2,000mm">
     </div>
     <div class="field">
-      <label class="lbl">구성품 <span class="req">*</span></label>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px"><label class="lbl" style="margin-bottom:0">구성품 <span class="req">*</span></label><button type="button" onclick="setNone('in-parts')" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">없음</button></div>
       <input class="inp" id="in-parts" type="text" placeholder="예: 리모컨, 전원선, 단자함">
     </div>
   </div>
@@ -352,7 +375,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 
   <!-- 특이사항 -->
   <div class="card">
-    <div class="card-ttl"><span class="dot g"></span>특이사항 <span class="req">*</span></div>
+    <div class="card-ttl" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:6px"><span class="dot g"></span>특이사항 <span class="req">*</span></span><button type="button" onclick="setNone('in-note')" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">없음</button></div>
     <textarea class="ta" id="in-note" placeholder="파손 여부, 주의사항 등"></textarea>
   </div>
 </div><!-- /form-in -->
@@ -578,6 +601,108 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
   </div>
 </div>
 
+
+
+<!-- ✏️ 수정 화면 -->
+<div class="edit-screen" id="edit-screen">
+  <div class="edit-hdr">
+    <div class="edit-hdr-top">
+      <div class="edit-hdr-title">✏️ 입고 정보 수정</div>
+      <button class="edit-close" onclick="closeEdit()">✕</button>
+    </div>
+    <div class="edit-hdr-code" id="edit-hdr-code"></div>
+  </div>
+  <div class="edit-body">
+    <!-- 집기 종류 -->
+    <div class="card">
+      <div class="card-ttl"><span class="dot in"></span>집기 종류 <span class="req">*</span></div>
+      <input class="inp" id="edit-category" type="text" placeholder="예: 모니터, 러그, 카펫, 조명" autocomplete="off">
+    </div>
+    <!-- 회수 매장 -->
+    <div class="card">
+      <div class="card-ttl"><span class="dot in"></span>회수 매장 <span class="req">*</span></div>
+      <input class="inp" id="edit-store" type="text" placeholder="예: 갤러리 00점, 맨션 00점" autocomplete="off">
+    </div>
+    <!-- 회수일 -->
+    <div class="card">
+      <div class="card-ttl"><span class="dot in"></span>회수일 <span class="req">*</span></div>
+      <div class="date-row">
+        <div class="date-wheel" id="edit-date-wheel">
+          <div class="date-unit">
+            <button class="date-step" type="button" onclick="stepDatePart('edit-date','yy',1)">▲</button>
+            <input class="date-part" id="edit-date-yy" placeholder="YY" maxlength="2" readonly>
+            <button class="date-step" type="button" onclick="stepDatePart('edit-date','yy',-1)">▼</button>
+          </div>
+          <div class="date-unit">
+            <button class="date-step" type="button" onclick="stepDatePart('edit-date','mm',1)">▲</button>
+            <input class="date-part" id="edit-date-mm" placeholder="MM" maxlength="2" readonly>
+            <button class="date-step" type="button" onclick="stepDatePart('edit-date','mm',-1)">▼</button>
+          </div>
+          <div class="date-unit">
+            <button class="date-step" type="button" onclick="stepDatePart('edit-date','dd',1)">▲</button>
+            <input class="date-part" id="edit-date-dd" placeholder="DD" maxlength="2" readonly>
+            <button class="date-step" type="button" onclick="stepDatePart('edit-date','dd',-1)">▼</button>
+          </div>
+        </div>
+        <input type="hidden" id="edit-date">
+        <button class="btn-today" onclick="setToday('edit-date')">오늘</button>
+      </div>
+    </div>
+    <!-- 담당자 -->
+    <div class="card">
+      <div class="card-ttl"><span class="dot in"></span>회수 담당자 <span class="req">*</span></div>
+      <input class="inp" id="edit-worker" type="text" placeholder="예: 최류정 대리" autocomplete="off">
+    </div>
+    <!-- 수량 -->
+    <div class="card">
+      <div class="card-ttl"><span class="dot in"></span>수량 <span class="req">*</span></div>
+      <div class="qty-row">
+        <button class="qty-btn" onclick="cqty('edit',-1)">−</button>
+        <input class="qty-inp" id="edit-qty" type="number" value="1" min="1">
+        <button class="qty-btn" onclick="cqty('edit',1)">+</button>
+      </div>
+    </div>
+    <!-- 사양 -->
+    <div class="card">
+      <div class="card-ttl"><span class="dot g"></span>상세 정보</div>
+      <div class="field">
+        <label class="lbl">사양</label>
+        <textarea class="ta" id="edit-spec" placeholder="예: SWAN/RQ309/PINK, 삼성 제조년월 모델코드 S/N"></textarea>
+      </div>
+      <div class="field">
+        <label class="lbl">사이즈</label>
+        <input class="inp" id="edit-size" type="text" placeholder="예: 44인치, 3,000mm x 2,000mm">
+      </div>
+      <div class="field">
+        <label class="lbl">구성품</label>
+        <input class="inp" id="edit-parts" type="text" placeholder="예: 리모컨, 전원선, 단자함">
+      </div>
+    </div>
+    <!-- 적재 위치 -->
+    <div class="card">
+      <div class="card-ttl"><span class="dot g"></span>적재 위치</div>
+      <div class="zone-grid">
+        <button class="zone-btn" onclick="selEditZone('1구역',this)"><span>1</span><small>구역</small></button>
+        <button class="zone-btn" onclick="selEditZone('2구역',this)"><span>2</span><small>구역</small></button>
+        <button class="zone-btn" onclick="selEditZone('3구역',this)"><span>3</span><small>구역</small></button>
+        <button class="zone-btn" onclick="selEditZone('4구역',this)"><span>4</span><small>구역</small></button>
+        <button class="zone-btn" onclick="selEditZone('5구역',this)"><span>5</span><small>구역</small></button>
+        <button class="zone-btn" onclick="selEditZone('6구역',this)"><span>6</span><small>구역</small></button>
+      </div>
+      <input type="hidden" id="edit-zone">
+    </div>
+    <!-- 특이사항 -->
+    <div class="card">
+      <div class="card-ttl"><span class="dot g"></span>특이사항</div>
+      <textarea class="ta" id="edit-note" placeholder="파손 여부, 주의사항 등"></textarea>
+    </div>
+  </div>
+  <!-- 저장/삭제 버튼 -->
+  <div class="edit-submit-bar">
+    <button class="btn-edit-del" onclick="deleteItem()" title="삭제">🗑</button>
+    <button class="btn-edit-save" onclick="saveEdit()">✏️ 수정 저장</button>
+  </div>
+</div>
 
 <!-- 매뉴얼 화면 -->
 <div class="manual-screen" id="manual-screen">
@@ -1071,6 +1196,7 @@ async function submit() {
       category:   linked.name,
       qty:        linked.qty || '1',
       spec:       linked.spec || '',
+      size:       linked.size || '',
       zone:       linked.zone || '',
       memo:       document.getElementById('out-dest').value.trim(),
       note:       document.getElementById('out-note').value.trim(),
@@ -1087,6 +1213,7 @@ async function submit() {
       category:   linked.name,
       qty:        linked.qty || '1',
       spec:       linked.spec || '',
+      size:       linked.size || '',
       zone:       linked.zone || '',
       memo:       document.getElementById('dis-reason').value,
       note:       document.getElementById('dis-note').value.trim(),
@@ -1408,6 +1535,149 @@ window.addEventListener('resize', () => {
   if (document.getElementById('label-screen').classList.contains('show')) scaleLabel();
 });
 
+
+// ── 없음 버튼 ────────────────────────────────────────────────
+function setNone(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.value = '-';
+  el.style.color = 'var(--g400)';
+  el.style.fontStyle = 'italic';
+  el.addEventListener('input', function onInput() {
+    el.style.color = ''; el.style.fontStyle = '';
+    el.removeEventListener('input', onInput);
+  }, { once: true });
+}
+
+// ── ✏️ 수정 바 토글 ────────────────────────────────────────────
+function toggleEditBar() {
+  const bar = document.getElementById('edit-bar');
+  const relabel = document.getElementById('relabel-bar');
+  relabel.style.display = 'none';
+  bar.style.display = bar.style.display === 'none' ? 'block' : 'none';
+  if (bar.style.display === 'block') document.getElementById('edit-code-input').focus();
+}
+
+// ── ✏️ 관리번호 조회 ────────────────────────────────────────────
+async function editSearch() {
+  const code = document.getElementById('edit-code-input').value.trim();
+  if (!code) { showT('관리번호를 입력해주세요', 'err'); return; }
+  try {
+    const data = await fetchGET(`${APPS_URL}?action=getByCode&code=${encodeURIComponent(code)}`);
+    if (data && data.found) {
+      openEditScreen(data.item);
+      document.getElementById('edit-bar').style.display = 'none';
+    } else {
+      showT(data && data.message ? data.message : '해당 관리번호를 찾을 수 없어요', 'err');
+    }
+  } catch(e) { showT('조회 실패. 다시 시도해주세요.', 'err'); }
+}
+
+// ── ✏️ 수정 화면 열기 (폼 채우기) ───────────────────────────────
+function openEditScreen(item) {
+  document.getElementById('edit-hdr-code').textContent = item.code;
+  document.getElementById('edit-category').value = item.name   || '';
+  document.getElementById('edit-store').value    = item.store  || '';
+  document.getElementById('edit-worker').value   = item.worker || '';
+  document.getElementById('edit-qty').value      = item.qty    || '1';
+  document.getElementById('edit-spec').value     = item.spec   || '';
+  document.getElementById('edit-size').value     = item.size   || '';
+  document.getElementById('edit-parts').value    = item.parts  || '';
+  document.getElementById('edit-zone').value     = item.zone   || '';
+  document.getElementById('edit-note').value     = item.memo   || '';
+
+  // 회수일 세팅
+  if (item.date) setDateParts('edit-date', item.date);
+
+  // 구역 버튼 선택 표시
+  document.querySelectorAll('#edit-screen .zone-btn').forEach(b => b.classList.remove('sel'));
+  if (item.zone) {
+    document.querySelectorAll('#edit-screen .zone-btn').forEach(b => {
+      if (b.querySelector('span') && b.querySelector('span').textContent === item.zone.replace('구역','')) {
+        b.classList.add('sel');
+      }
+    });
+  }
+
+  // 현재 수정 중인 코드 저장
+  window._editCode = item.code;
+  document.getElementById('edit-screen').classList.add('show');
+}
+
+// ── ✏️ 수정 저장 ────────────────────────────────────────────────
+async function saveEdit() {
+  const code = window._editCode;
+  if (!code) return;
+  const category = document.getElementById('edit-category').value.trim();
+  const store    = document.getElementById('edit-store').value.trim();
+  const worker   = document.getElementById('edit-worker').value.trim();
+  if (!category) { showT('집기 종류를 입력해주세요', 'err'); return; }
+  if (!store)    { showT('회수 매장을 입력해주세요', 'err'); return; }
+  if (!worker)   { showT('회수 담당자를 입력해주세요', 'err'); return; }
+
+  const p = {
+    action:   'edit',
+    code:     code,
+    category: category,
+    store:    store,
+    date:     document.getElementById('edit-date').value.trim(),
+    worker:   worker,
+    qty:      document.getElementById('edit-qty').value,
+    spec:     document.getElementById('edit-spec').value.trim(),
+    size:     document.getElementById('edit-size').value.trim(),
+    parts:    document.getElementById('edit-parts').value.trim(),
+    zone:     document.getElementById('edit-zone').value,
+    memo:     document.getElementById('edit-note').value.trim(),
+  };
+
+  document.getElementById('loading').classList.add('show');
+  try {
+    const params = new URLSearchParams(p);
+    const data = await fetchGET(`${APPS_URL}?${params.toString()}`);
+    if (data && data.success) {
+      showT('✅ 수정 완료!', 'ok');
+      closeEdit();
+    } else {
+      showT(data && data.message ? data.message : '수정 실패. 다시 시도해주세요.', 'err');
+    }
+  } catch(e) { showT('수정 실패. 다시 시도해주세요.', 'err'); }
+  finally { document.getElementById('loading').classList.remove('show'); }
+}
+
+// ── ✏️ 삭제 ─────────────────────────────────────────────────────
+async function deleteItem() {
+  const code = window._editCode;
+  if (!code) return;
+  if (!confirm(`[${code}] 을 삭제할까요?\n입출고_로그와 현재재고에서 모두 삭제됩니다.`)) return;
+
+  document.getElementById('loading').classList.add('show');
+  try {
+    const data = await fetchGET(`${APPS_URL}?action=delete&code=${encodeURIComponent(code)}`);
+    if (data && data.success) {
+      showT('🗑 삭제 완료!', '');
+      closeEdit();
+      loadCapacity();
+    } else {
+      showT(data && data.message ? data.message : '삭제 실패. 다시 시도해주세요.', 'err');
+    }
+  } catch(e) { showT('삭제 실패. 다시 시도해주세요.', 'err'); }
+  finally { document.getElementById('loading').classList.remove('show'); }
+}
+
+// ── ✏️ 수정 화면 닫기 ───────────────────────────────────────────
+function closeEdit() {
+  document.getElementById('edit-screen').classList.remove('show');
+  document.getElementById('edit-code-input').value = '';
+  window._editCode = null;
+}
+
+// ── ✏️ 구역 선택 (수정 화면 전용) ──────────────────────────────
+function selEditZone(val, el) {
+  document.querySelectorAll('#edit-screen .zone-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('edit-zone').value = val;
+}
+
 // ── 전역 등록 (미리보기/CSP 환경 인라인 onclick 대응) ──────────
 window.setMode = setMode;
 window.selZone = selZone;
@@ -1435,6 +1705,13 @@ window.closeManual = closeManual;
 window.switchManualTab = switchManualTab;
 window.toggleRelabel = toggleRelabel;
 window.relabelSearch = relabelSearch;
+window.toggleEditBar = toggleEditBar;
+window.editSearch = editSearch;
+window.saveEdit = saveEdit;
+window.deleteItem = deleteItem;
+window.closeEdit = closeEdit;
+window.selEditZone = selEditZone;
+window.setNone = setNone;
 </script>
 </body>
 </html>
