@@ -68,7 +68,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .qty-row{display:flex;align-items:center;gap:8px}
 .qty-btn{width:40px;height:40px;border:1.5px solid var(--g200);border-radius:var(--r-sm);background:var(--g50);font-size:20px;color:var(--g600);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
 .qty-btn:active{transform:scale(.9);background:var(--g100)}
-.qty-inp{flex:1;text-align:center;font-size:16px;font-weight:700;border:1.5px solid var(--g200);border-radius:var(--r-sm);padding:10px;background:var(--g50);color:var(--g800);font-family:var(--font);outline:none;-webkit-appearance:none}
+.qty-inp{width:80px;min-width:80px;max-width:80px;text-align:center;font-size:16px;font-weight:700;border:1.5px solid var(--g200);border-radius:var(--r-sm);padding:10px 4px;background:var(--g50);color:var(--g800);font-family:var(--font);outline:none;-webkit-appearance:none}
 .qty-inp:focus{border-color:var(--accent);background:var(--white)}
 .qty-hint{margin-top:8px;font-size:11px;color:var(--g400);line-height:1.6}
 
@@ -94,8 +94,8 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .sresult:last-child{border-bottom:none}
 .sresult:active{background:var(--g50)}
 .sresult-sub{font-size:11px;color:var(--g400);margin-top:2px}
-.linked-preview{background:var(--white);border:1.5px solid var(--in);border-radius:var(--r-sm);padding:12px 14px;margin-top:10px;display:none}
-.linked-preview.dis-t{border-color:var(--dis)}
+.linked-preview{background:var(--in-bg);border:2px solid var(--in);border-radius:var(--r-sm);padding:12px 14px;margin-top:10px;display:none}
+.linked-preview.dis-t{border-color:var(--dis);background:var(--dis-bg)}
 .linked-preview.show{display:block}
 .linked-badge{display:inline-flex;align-items:center;gap:5px;background:var(--in-bg);color:var(--in);font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;margin-bottom:8px}
 .linked-badge.dis-t{background:var(--dis-bg);color:var(--dis)}
@@ -330,7 +330,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
       <div class="search-results" id="out-date-results" style="margin-top:6px"></div>
     </div>
     <div class="linked-preview" id="out-preview">
-      <div class="linked-badge">✅ 연결됨</div>
+      <div class="linked-badge" style="font-size:13px;padding:5px 12px">✅ 품목 연결 완료! 아래 내용을 확인하세요</div>
       <div class="linked-rows" id="out-prev-rows"></div>
     </div>
   </div>
@@ -403,7 +403,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
       <div class="search-results" id="dis-date-results" style="margin-top:6px"></div>
     </div>
     <div class="linked-preview dis-t" id="dis-preview">
-      <div class="linked-badge dis-t">✅ 연결됨</div>
+      <div class="linked-badge dis-t" style="font-size:13px;padding:5px 12px">✅ 품목 연결 완료! 아래 내용을 확인하세요</div>
       <div class="linked-rows" id="dis-prev-rows"></div>
     </div>
   </div>
@@ -749,7 +749,10 @@ async function onNsearch(form, val) {
 // ── 품목 연결 ─────────────────────────────────────────────────
 function linkIt(form, item) {
   linked = item;
-  document.getElementById(form+'-results').style.display = 'none';
+  // 날짜 조회 결과도 숨기기
+  const dateEl = document.getElementById(form+'-date-results');
+  if (dateEl) dateEl.style.display = 'none';
+  document.getElementById(form+'-results') && (document.getElementById(form+'-results').style.display = 'none');
   const rows = [
     ['관리번호', `<span class="lv mono">${item.code}</span>`],
     ['집기 종류', `<span class="lv">${item.name}</span>`],
@@ -760,6 +763,21 @@ function linkIt(form, item) {
   document.getElementById(form+'-prev-rows').innerHTML = rows.map(([k,v]) =>
     `<div class="linked-row"><span class="lk">${k}</span>${v}</div>`).join('');
   document.getElementById(form+'-preview').classList.add('show');
+  // 연결 완료 - 입력창에 선택된 코드 표시 + 초록 강조
+  const codeInput = document.getElementById(form+'-code');
+  if (codeInput) {
+    codeInput.value = item.code;
+    codeInput.style.borderColor = 'var(--in)';
+    codeInput.style.boxShadow = '0 0 0 3px var(--in-glow)';
+    codeInput.style.background = 'var(--in-bg)';
+    codeInput.style.fontWeight = '700';
+  }
+  // 날짜 결과 목록 숨기기
+  const dateEl = document.getElementById(form+'-date-results');
+  if (dateEl) dateEl.style.display = 'none';
+  // 연결 완료 토스트
+  const modeLabel = form === 'out' ? '출고' : '폐기';
+  showT(`✅ ${item.name} 연결 완료!`, 'ok');
 }
 
 // ── 유효성 검사 ───────────────────────────────────────────────
@@ -1010,6 +1028,15 @@ function nextE() {
   document.getElementById('in-qty').value='1';
   const oq=document.getElementById('out-qty');if(oq)oq.value='1';
   const dq=document.getElementById('dis-qty');if(dq)dq.value='1';
+  // 조회 입력창 스타일 리셋
+  ['out-code','dis-code'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.borderColor=''; el.style.boxShadow=''; el.style.background=''; el.style.fontWeight=''; }
+  });
+  ['out-date-results','dis-date-results'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.display='none'; el.innerHTML=''; }
+  });
   setToday('in-date');
   setToday('out-date');
   setToday('dis-date');
@@ -1082,10 +1109,17 @@ async function searchByDate(form) {
     const results = (data && data.results) ? data.results : [];
     if (btn) { btn.textContent = '조회'; btn.disabled = false; }
 
+    const codeInput = document.getElementById(form+'-code');
     if (!results.length) {
-      resultEl.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:var(--g400)">해당 날짜의 보유 품목이 없어요</div>';
+      // 결과 없음 - 빨간 테두리
+      codeInput.style.borderColor = 'var(--out)';
+      codeInput.style.boxShadow = '0 0 0 3px var(--out-glow)';
+      resultEl.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:var(--out)">❌ 해당 날짜의 보유 품목이 없어요</div>';
       return;
     }
+    // 결과 있음 - 초록 테두리
+    codeInput.style.borderColor = 'var(--in)';
+    codeInput.style.boxShadow = '0 0 0 3px var(--in-glow)';
     resultEl.innerHTML = results.map(r => `
       <div class="sresult" ondblclick='linkIt("${form}",${JSON.stringify(r)})' onclick='previewItem("${form}",${JSON.stringify(r)})' style="cursor:pointer">
         <div style="display:flex;justify-content:space-between;align-items:center">
