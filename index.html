@@ -20,18 +20,18 @@
 body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:100dvh;padding-bottom:80px}
 
 /* HEADER */
-.hdr{background:var(--white);padding:14px 18px 0;border-bottom:1px solid var(--g100);position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.hdr{background:var(--white);padding:14px 18px 0;border-bottom:1px solid var(--g100);position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.05)}
 .hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .logo{font-size:15px;font-weight:900;color:var(--g800)}.logo em{color:var(--accent);font-style:normal}
 .date-pill{font-size:11px;background:var(--g100);color:var(--g600);padding:4px 10px;border-radius:20px;font-weight:500}
-.mode-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--g100);border-radius:11px;padding:3px;gap:3px;margin-bottom:12px}
-.mode-btn{padding:10px 0;border:none;border-radius:9px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;background:transparent;color:var(--g400)}
+.mode-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--g100);border-radius:11px;padding:3px;gap:3px;margin-bottom:0;position:relative;z-index:101}
+.mode-btn{padding:10px 0;border:none;border-radius:9px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;background:transparent;color:var(--g400);position:relative;z-index:101;-webkit-tap-highlight-color:rgba(0,0,0,0.1)}
 .mode-btn.on-in{background:var(--in);color:#fff;box-shadow:0 2px 8px var(--in-glow)}
 .mode-btn.on-out{background:var(--out);color:#fff;box-shadow:0 2px 8px var(--out-glow)}
 .mode-btn.on-dis{background:var(--dis);color:#fff;box-shadow:0 2px 8px var(--dis-glow)}
 
 /* 용량 게이지 */
-.cap-bar-wrap{padding:10px 18px 12px;background:var(--white);border-top:1px solid var(--g100)}
+.cap-bar-wrap{padding:8px 18px 12px;background:var(--white);margin-top:10px}
 .cap-top{display:flex;justify-content:space-between;font-size:11px;color:var(--g400);margin-bottom:5px}
 .cap-bar-bg{height:8px;background:var(--g100);border-radius:6px;overflow:hidden}
 .cap-bar-fill{height:100%;border-radius:6px;transition:width .6s,background .3s;background:var(--in)}
@@ -65,10 +65,11 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .btn-today{padding:12px 14px;border:1.5px solid var(--g200);border-radius:var(--r-sm);background:var(--g50);font-family:var(--font);font-size:13px;font-weight:700;color:var(--g600);cursor:pointer;white-space:nowrap;flex-shrink:0}
 
 /* 수량 */
-.qty-row{display:flex;align-items:center;gap:8px}
-.qty-btn{width:48px;height:48px;border:1.5px solid var(--g200);border-radius:var(--r-sm);background:var(--g50);font-size:20px;color:var(--g600);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
+.qty-row{display:flex;align-items:center;gap:8px;width:100%;overflow:hidden}
+.qty-btn{width:48px;height:48px;min-width:48px;border:1.5px solid var(--g200);border-radius:var(--r-sm);background:var(--g50);font-size:20px;color:var(--g600);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
 .qty-btn:active{transform:scale(.9);background:var(--g100)}
-.qty-inp{flex:1;text-align:center;font-size:15px;font-weight:700;border:1.5px solid var(--g200);border-radius:var(--r-sm);padding:12px 13px;background:var(--g50);color:var(--g800);font-family:var(--font);outline:none;-webkit-appearance:none;transition:border-color .15s,box-shadow .15s}
+.qty-inp{flex:1;min-width:0;text-align:center;font-size:15px;font-weight:700;border:1.5px solid var(--g200);border-radius:var(--r-sm);padding:12px 6px;background:var(--g50);color:var(--g800);font-family:var(--font);outline:none;-webkit-appearance:none;-moz-appearance:textfield;transition:border-color .15s,box-shadow .15s}
+.qty-inp::-webkit-inner-spin-button,.qty-inp::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .qty-inp:focus{border-color:var(--accent);background:var(--white)}
 .qty-hint{margin-top:8px;font-size:11px;color:var(--g400);line-height:1.6}
 
@@ -112,6 +113,44 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .btn-sub.out-mode{background:var(--out);box-shadow:0 3px 14px var(--out-glow)}
 .btn-sub.dis-mode{background:var(--dis);box-shadow:0 3px 14px var(--dis-glow)}
 .btn-sub:active{transform:scale(.97)}.btn-sub:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-manual{width:50px;height:52px;border:1.5px solid var(--g200);border-radius:var(--r);background:var(--white);font-size:18px;font-weight:900;color:var(--g600);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--mono)}
+
+/* 매뉴얼 화면 */
+.manual-screen{display:none;position:fixed;inset:0;background:var(--white);z-index:250;flex-direction:column;overflow:hidden}
+.manual-screen.show{display:flex}
+.manual-hdr{background:var(--g800);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.manual-hdr-title{color:#fff;font-size:16px;font-weight:900}
+.manual-close{width:36px;height:36px;border:none;background:rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.manual-tabs{display:flex;background:var(--g50);border-bottom:1px solid var(--g100);flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.manual-tabs::-webkit-scrollbar{display:none}
+.manual-tab{flex-shrink:0;padding:11px 16px;border:none;background:transparent;font-family:var(--font);font-size:13px;font-weight:700;color:var(--g400);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap}
+.manual-tab.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--white)}
+.manual-body{flex:1;overflow-y:auto;padding:18px 16px 40px;-webkit-overflow-scrolling:touch}
+.m-section{margin-bottom:24px}
+.m-h1{font-size:15px;font-weight:900;color:var(--g800);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--g100);display:flex;align-items:center;gap:8px}
+.m-h2{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.6px;text-transform:uppercase;margin-bottom:8px;margin-top:14px}
+.m-step{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
+.m-step-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.m-step-num.out{background:var(--out)}
+.m-step-num.dis{background:var(--dis)}
+.m-step-txt{font-size:14px;color:var(--g800);line-height:1.55}
+.m-step-txt strong{font-weight:700}
+.m-note{background:var(--g50);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 12px;font-size:13px;color:var(--g600);line-height:1.6;margin-bottom:8px}
+.m-note.warn{border-left-color:var(--out);background:#fff8f7}
+.m-note.tip{border-left-color:#f59e0b;background:#fffbeb}
+.m-chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.m-chip{background:var(--g100);border-radius:6px;padding:5px 10px;font-size:12px;color:var(--g600);font-weight:500}
+.m-chip.in{background:var(--in-bg);color:var(--in)}
+.m-chip.out{background:var(--out-bg);color:var(--out)}
+.m-chip.dis{background:var(--dis-bg);color:var(--dis)}
+.m-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px}
+.m-table th{background:var(--g100);padding:8px 10px;text-align:left;font-weight:700;color:var(--g600);font-size:11px}
+.m-table td{padding:8px 10px;border-bottom:1px solid var(--g100);color:var(--g800);vertical-align:top;line-height:1.5}
+.m-table tr:last-child td{border-bottom:none}
+.m-ex{font-size:12px;color:var(--g400);font-family:var(--mono);background:var(--g50);padding:2px 6px;border-radius:4px;display:inline-block;margin-top:2px}
+.m-zone-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.m-zone-box{border:2px solid var(--g200);border-radius:8px;padding:10px 4px;text-align:center;font-size:20px;font-weight:900;color:var(--g600)}
+.m-zone-box small{display:block;font-size:10px;font-weight:500;color:var(--g400);margin-top:2px}
 
 /* LOADING */
 .loading-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.88);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:14px}
@@ -190,9 +229,15 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     </div>
   </div>
   <div class="mode-toggle">
-    <button class="mode-btn on-in" id="btn-in"  onclick="setMode('in')">📦 입고</button>
-    <button class="mode-btn"       id="btn-out" onclick="setMode('out')">📤 출고</button>
-    <button class="mode-btn"       id="btn-dis" onclick="setMode('dis')">🗑 폐기</button>
+    <button class="mode-btn on-in" id="btn-in"  onclick="setMode('in',event)" ontouchend="setMode('in',event)">📦 입고</button>
+    <button class="mode-btn"       id="btn-out" onclick="setMode('out',event)" ontouchend="setMode('out',event)">📤 출고</button>
+    <button class="mode-btn"       id="btn-dis" onclick="setMode('dis',event)" ontouchend="setMode('dis',event)">🗑 폐기</button>
+  </div>
+  <!-- 용량 게이지 -->
+  <div class="cap-bar-wrap">
+    <div class="cap-top"><span>창고 사용량</span><span id="cap-text"></span></div>
+    <div class="cap-bar-bg"><div class="cap-bar-fill" id="cap-fill" style="width:0%"></div></div>
+    <div class="cap-warn" id="cap-warn"></div>
   </div>
 </div>
 
@@ -203,13 +248,6 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     <button onclick="relabelSearch()" style="padding:8px 14px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">라벨 출력</button>
     <button onclick="document.getElementById('relabel-bar').style.display='none'" style="padding:8px 10px;border:1.5px solid var(--g200);border-radius:8px;background:var(--white);font-size:13px;cursor:pointer">✕</button>
   </div>
-</div>
-
-<!-- 용량 게이지 -->
-<div class="cap-bar-wrap">
-  <div class="cap-top"><span>창고 사용량</span><span id="cap-text"></span></div>
-  <div class="cap-bar-bg"><div class="cap-bar-fill" id="cap-fill" style="width:0%"></div></div>
-  <div class="cap-warn" id="cap-warn"></div>
 </div>
 
 <div class="body">
@@ -475,6 +513,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 <div class="submit-bar">
   <button class="btn-reset" onclick="resetAll()">↺</button>
   <button class="btn-sub in-mode" id="btn-sub" onclick="submit()">📦 입고 등록</button>
+  <button class="btn-manual" onclick="showManual()" title="매뉴얼">?</button>
 </div>
 
 <!-- LOADING -->
@@ -534,6 +573,176 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
   <div class="label-actions" style="width:100%;max-width:559px;display:flex;gap:8px;padding:12px 14px">
     <button class="btn-save-label" onclick="saveLabel()">⬇ A5 저장</button>
     <button class="btn-close-label" onclick="closeLabel()">닫기</button>
+  </div>
+</div>
+
+
+<!-- 매뉴얼 화면 -->
+<div class="manual-screen" id="manual-screen">
+  <div class="manual-hdr">
+    <div class="manual-hdr-title">📋 매뉴얼</div>
+    <button class="manual-close" onclick="closeManual()">✕</button>
+  </div>
+  <div class="manual-tabs" id="manual-tabs">
+    <button class="manual-tab active" onclick="switchManualTab(0)">📦 입고</button>
+    <button class="manual-tab" onclick="switchManualTab(1)">📤 출고</button>
+    <button class="manual-tab" onclick="switchManualTab(2)">🗑 폐기</button>
+    <button class="manual-tab" onclick="switchManualTab(3)">✍️ 기재요령</button>
+    <button class="manual-tab" onclick="switchManualTab(4)">🏭 시스템</button>
+  </div>
+
+  <!-- 탭0: 입고 -->
+  <div class="manual-body" id="mtab-0">
+    <div class="m-section">
+      <div class="m-h1">📦 입고(회수) 프로세스</div>
+      <div class="m-h2">회수 담당자 현장 순서</div>
+      <div class="m-step"><div class="m-step-num">1</div><div class="m-step-txt"><strong>포장 전</strong> 집기 상태 사진 촬영</div></div>
+      <div class="m-step"><div class="m-step-num">2</div><div class="m-step-txt">창고 적재 후 <strong>이 앱에서 입고 등록</strong></div></div>
+      <div class="m-step"><div class="m-step-num">3</div><div class="m-step-txt">등록 완료 후 <strong>라벨 출력 → 집기에 부착</strong></div></div>
+      <div class="m-step"><div class="m-step-num">4</div><div class="m-step-txt">라벨이 보이도록 <strong>적재 위치 사진 촬영</strong></div></div>
+      <div class="m-step"><div class="m-step-num">5</div><div class="m-step-txt">단톡방에 <strong>포장 전 사진 + 적재 위치 사진</strong> 업로드</div></div>
+
+      <div class="m-h2">리스트 관리자 확인 순서</div>
+      <div class="m-step"><div class="m-step-num">1</div><div class="m-step-txt">단톡방 사진과 <strong>회수품 시트 내용 일치</strong> 여부 확인</div></div>
+      <div class="m-step"><div class="m-step-num">2</div><div class="m-step-txt">수정 필요 시 현장담당자에게 <strong>리스트 및 라벨 수정 요청</strong></div></div>
+
+      <div class="m-note tip">💡 <strong>입고 등록 시 필수 입력:</strong> 집기 종류, 회수 매장, 회수일, 회수 담당자, 회수 요청자, 수량, 사양, 적재위치</div>
+    </div>
+
+    <div class="m-section">
+      <div class="m-h1">🗺 적재 위치 (구역)</div>
+      <div class="m-zone-grid">
+        <div class="m-zone-box">1<small>A구역</small></div>
+        <div class="m-zone-box">2<small>B구역</small></div>
+        <div class="m-zone-box">3<small>C구역</small></div>
+        <div class="m-zone-box">6<small>F구역</small></div>
+        <div class="m-zone-box">5<small>E구역</small></div>
+        <div class="m-zone-box">4<small>D구역</small></div>
+      </div>
+      <div class="m-note">창고는 6구역으로 나뉩니다. 적재 후 반드시 위치를 선택해주세요.</div>
+    </div>
+  </div>
+
+  <!-- 탭1: 출고 -->
+  <div class="manual-body" id="mtab-1" style="display:none">
+    <div class="m-section">
+      <div class="m-h1">📤 출고 프로세스</div>
+      <div class="m-h2">출고 담당자 순서</div>
+      <div class="m-step"><div class="m-step-num out">1</div><div class="m-step-txt">출고 전 <strong>라벨(회수품 용지)이 보이도록</strong> 집기 사진 촬영</div></div>
+      <div class="m-step"><div class="m-step-num out">2</div><div class="m-step-txt">이 앱에서 <strong>출고 등록</strong> — 원본 입고 관리번호 연결 필수</div></div>
+      <div class="m-step"><div class="m-step-num out">3</div><div class="m-step-txt">단톡방에 <strong>사용 현장명 + 사진</strong> 업로드</div></div>
+
+      <div class="m-h2">리스트 관리자 확인</div>
+      <div class="m-step"><div class="m-step-num out">1</div><div class="m-step-txt">단톡방 사진 확인</div></div>
+      <div class="m-step"><div class="m-step-num out">2</div><div class="m-step-txt">리스트와 출고 내용 <strong>일치 여부</strong> 확인</div></div>
+
+      <div class="m-note warn">⚠️ 출고 등록 시 반드시 원본 입고 관리번호를 연결해야 재고가 정확히 차감됩니다.</div>
+
+      <div class="m-h2">시몬스 출고 요청 시</div>
+      <div class="m-note">스프레드시트에서 필요한 집기 넘버를 확인 후 품목명과 함께 요청해주세요.</div>
+    </div>
+  </div>
+
+  <!-- 탭2: 폐기 -->
+  <div class="manual-body" id="mtab-2" style="display:none">
+    <div class="m-section">
+      <div class="m-h1">🗑 폐기 프로세스</div>
+      <div class="m-step"><div class="m-step-num dis">1</div><div class="m-step-txt">폐기 대상 확인 — <strong>2년 이상 적재 집기</strong> 우선 검토</div></div>
+      <div class="m-step"><div class="m-step-num dis">2</div><div class="m-step-txt">이 앱에서 <strong>폐기 등록</strong> — 원본 입고 관리번호 연결</div></div>
+      <div class="m-step"><div class="m-step-num dis">3</div><div class="m-step-txt">폐기 사유 및 처리 방법 메모 입력</div></div>
+
+      <div class="m-h2">관리 기준</div>
+      <div class="m-note warn">🚨 <strong>폐기 검토 기준</strong><br>• 2년 이상 적재된 집기<br>• 창고 적재량이 모니터 10ea 이상 or 단프라 320ea(80%) 이상일 경우 일부 폐기 또는 이동</div>
+      <div class="m-note">📅 <strong>정기 점검</strong><br>• 월 1회: 창고 방문하여 실제 수량 ↔ 리스트 교차 확인<br>• 연 1회: 장기 적재 집기 검토</div>
+    </div>
+  </div>
+
+  <!-- 탭3: 기재요령 -->
+  <div class="manual-body" id="mtab-3" style="display:none">
+    <div class="m-section">
+      <div class="m-h1">✍️ 항목별 기재요령</div>
+
+      <div class="m-h2">회수 매장</div>
+      <div class="m-chip-row">
+        <span class="m-chip">갤러리 00점</span>
+        <span class="m-chip">맨션 00점</span>
+        <span class="m-chip">00백화점 00점</span>
+      </div>
+
+      <div class="m-h2">집기 종류</div>
+      <div class="m-chip-row">
+        <span class="m-chip">모니터</span><span class="m-chip">러그</span><span class="m-chip">카펫</span>
+        <span class="m-chip">조명</span><span class="m-chip">케노샤</span><span class="m-chip">테크니컬장</span>
+        <span class="m-chip">카운터</span>
+      </div>
+
+      <table class="m-table">
+        <tr><th>집기 종류</th><th>사양 기재 방법</th></tr>
+        <tr>
+          <td>러그 / 카펫</td>
+          <td>브랜드 / 코드 / 색상<br><span class="m-ex">SWAN / RQ309 / PINK</span><br><span class="m-ex">KOLON / DC9112 / BLACK</span><br><span class="m-ex">TUFTING RUG</span></td>
+        </tr>
+        <tr>
+          <td>모니터</td>
+          <td>제조년월, 모델코드, S/N<br><span class="m-ex">삼성 / 2024.03 / LF24T35 / SN123</span></td>
+        </tr>
+        <tr>
+          <td>조명</td>
+          <td>안정기 유무<br><span class="m-ex">화이트 안정기O</span> / <span class="m-ex">블랙 안정기X</span></td>
+        </tr>
+        <tr>
+          <td>테크니컬장<br>케노샤홈장</td>
+          <td>구성 내용<br><span class="m-ex">이불걸이 화이트</span> / <span class="m-ex">베개받침대 아연</span></td>
+        </tr>
+        <tr>
+          <td>콘센트<br>시몬스 커버</td>
+          <td>구 수 및 종류<br><span class="m-ex">2구 콘센트</span> / <span class="m-ex">1구 스위치</span> / <span class="m-ex">그라체 1구 화이트</span></td>
+        </tr>
+        <tr>
+          <td>사인</td>
+          <td>내용<br><span class="m-ex">계단주의</span> / <span class="m-ex">N32=VEGAN</span></td>
+        </tr>
+      </table>
+
+      <div class="m-h2">사이즈</div>
+      <div class="m-chip-row">
+        <span class="m-chip">44인치</span>
+        <span class="m-chip">3,000mm x 2,000mm</span>
+      </div>
+
+      <div class="m-h2">구성품</div>
+      <div class="m-chip-row">
+        <span class="m-chip">리모컨</span><span class="m-chip">전원선</span><span class="m-chip">단자함</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 탭4: 시스템 -->
+  <div class="manual-body" id="mtab-4" style="display:none">
+    <div class="m-section">
+      <div class="m-h1">🏭 시스템 구성</div>
+      <table class="m-table">
+        <tr><th>구성요소</th><th>설명</th></tr>
+        <tr><td>📱 이 앱</td><td>현장에서 스마트폰으로 입·출고·폐기 등록</td></tr>
+        <tr><td>⚙️ Apps Script</td><td>데이터 처리 서버 (자동 연동)</td></tr>
+        <tr><td>📊 구글 시트</td><td>모든 데이터 저장 및 재고 현황 확인</td></tr>
+      </table>
+
+      <div class="m-h2">관리번호 형식</div>
+      <div class="m-note"><span style="font-family:var(--mono);font-size:14px;font-weight:700">20260507_01</span><br>날짜(YYYYMMDD) + 순번(01, 02...)</div>
+
+      <div class="m-h2">구글 시트 바로가기</div>
+      <a href="https://docs.google.com/spreadsheets/d/16xb1o_Lw7_EyyVkz1tAsrU6DjMAHHQt936ySWvSqGns/edit" target="_blank"
+        style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:var(--g50);border:1.5px solid var(--g200);border-radius:var(--r);font-size:14px;font-weight:700;color:var(--accent);text-decoration:none;margin-bottom:8px">
+        📊 구글 시트 열기
+      </a>
+
+      <div class="m-h2">라벨 재출력</div>
+      <div class="m-note">화면 우상단 <strong>🏷 라벨재출력</strong> 버튼 → 관리번호 입력 → 라벨 출력</div>
+
+      <div class="m-h2">시몬스 입고 요청 시</div>
+      <div class="m-note warn">품목명을 정확히 기재하여 요청하고, 창고 적재 가능 수량을 사전에 확인해주세요.</div>
+    </div>
   </div>
 </div>
 
@@ -682,7 +891,8 @@ async function loadCapacity() {
 loadCapacity();
 
 // ── 모드 전환 ─────────────────────────────────────────────────
-function setMode(m) {
+function setMode(m, e) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
   mode = m; linked = null;
   ['in','out','dis'].forEach(x => {
     document.getElementById('btn-'+x).className = 'mode-btn' + (m===x ? ` on-${x}` : '');
@@ -1053,6 +1263,21 @@ function nextE() {
 function resetAll() {
   if (!confirm('입력 내용을 모두 초기화할까요?')) return;
   nextE();
+}
+
+
+// ── 매뉴얼 ────────────────────────────────────────────────────
+function showManual() {
+  document.getElementById('manual-screen').classList.add('show');
+}
+function closeManual() {
+  document.getElementById('manual-screen').classList.remove('show');
+}
+function switchManualTab(idx) {
+  const tabs = document.querySelectorAll('.manual-tab');
+  const bodies = document.querySelectorAll('[id^="mtab-"]');
+  tabs.forEach((t, i) => t.classList.toggle('active', i === idx));
+  bodies.forEach((b, i) => b.style.display = i === idx ? 'block' : 'none');
 }
 
 // ── 토스트 ────────────────────────────────────────────────────
