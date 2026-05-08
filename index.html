@@ -24,8 +24,9 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .logo{font-size:15px;font-weight:900;color:var(--g800)}.logo em{color:var(--accent);font-style:normal}
 .date-pill{font-size:11px;background:var(--g100);color:var(--g600);padding:4px 10px;border-radius:20px;font-weight:500}
-.mode-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--g100);border-radius:11px;padding:3px;gap:3px;margin-bottom:0;position:relative;z-index:101}
-.mode-btn{padding:10px 0;border:none;border-radius:9px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;background:transparent;color:var(--g400);position:relative;z-index:101;-webkit-tap-highlight-color:rgba(0,0,0,0.1)}
+.mode-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--g100);border-radius:11px;padding:3px;gap:3px}
+.tab-wrap{position:sticky;top:var(--hdr-h,0);z-index:49;background:var(--white);padding:8px 14px 10px;border-bottom:1px solid var(--g100)}
+.mode-btn{padding:10px 0;border:none;border-radius:9px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;background:transparent;color:var(--g400)}
 .mode-btn.on-in{background:var(--in);color:#fff;box-shadow:0 2px 8px var(--in-glow)}
 .mode-btn.on-out{background:var(--out);color:#fff;box-shadow:0 2px 8px var(--out-glow)}
 .mode-btn.on-dis{background:var(--dis);color:#fff;box-shadow:0 2px 8px var(--dis-glow)}
@@ -113,7 +114,6 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .btn-sub.out-mode{background:var(--out);box-shadow:0 3px 14px var(--out-glow)}
 .btn-sub.dis-mode{background:var(--dis);box-shadow:0 3px 14px var(--dis-glow)}
 .btn-sub:active{transform:scale(.97)}.btn-sub:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.btn-manual{width:50px;height:52px;border:1.5px solid var(--g200);border-radius:var(--r);background:var(--white);font-size:18px;font-weight:900;color:var(--g600);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--mono)}
 
 /* 매뉴얼 화면 */
 .manual-screen{display:none;position:fixed;inset:0;background:var(--white);z-index:250;flex-direction:column;overflow:hidden}
@@ -222,22 +222,25 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 <!-- HEADER -->
 <div class="hdr">
   <div class="hdr-top">
-    <div class="logo">1호<em>창고</em></div>
+    <div style="display:flex;align-items:center;gap:10px"><div class="logo">1호<em>창고</em></div><button onclick="showManual()" style="font-size:11px;padding:4px 10px;border:1.5px solid var(--accent);border-radius:20px;background:var(--white);color:var(--accent);font-family:var(--font);font-weight:700;cursor:pointer">📋 매뉴얼</button></div>
     <div style="display:flex;align-items:center;gap:8px">
       <button onclick="toggleRelabel()" style="font-size:11px;padding:4px 10px;border:1.5px solid var(--g200);border-radius:20px;background:var(--white);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">🏷 라벨재출력</button>
       <div class="date-pill" id="date-pill"></div>
     </div>
-  </div>
-  <div class="mode-toggle">
-    <button class="mode-btn on-in" id="btn-in"  onclick="setMode('in',event)" ontouchend="setMode('in',event)">📦 입고</button>
-    <button class="mode-btn"       id="btn-out" onclick="setMode('out',event)" ontouchend="setMode('out',event)">📤 출고</button>
-    <button class="mode-btn"       id="btn-dis" onclick="setMode('dis',event)" ontouchend="setMode('dis',event)">🗑 폐기</button>
   </div>
   <!-- 용량 게이지 -->
   <div class="cap-bar-wrap">
     <div class="cap-top"><span>창고 사용량</span><span id="cap-text"></span></div>
     <div class="cap-bar-bg"><div class="cap-bar-fill" id="cap-fill" style="width:0%"></div></div>
     <div class="cap-warn" id="cap-warn"></div>
+  </div>
+</div>
+<!-- 탭 토글 - sticky지만 hdr와 별도 div로 분리 -->
+<div class="tab-wrap">
+  <div class="mode-toggle">
+    <button class="mode-btn on-in" id="btn-in"  onclick="setMode('in')">📦 입고</button>
+    <button class="mode-btn"       id="btn-out" onclick="setMode('out')">📤 출고</button>
+    <button class="mode-btn"       id="btn-dis" onclick="setMode('dis')">🗑 폐기</button>
   </div>
 </div>
 
@@ -513,7 +516,6 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 <div class="submit-bar">
   <button class="btn-reset" onclick="resetAll()">↺</button>
   <button class="btn-sub in-mode" id="btn-sub" onclick="submit()">📦 입고 등록</button>
-  <button class="btn-manual" onclick="showManual()" title="매뉴얼">?</button>
 </div>
 
 <!-- LOADING -->
@@ -766,6 +768,14 @@ function getDispDate() {
   return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${w[d.getDay()]}`;
 }
 document.getElementById('date-pill').textContent = getDispDate();
+// hdr 높이 측정 → tab-wrap top 동적 설정
+function updateTabTop() {
+  const hdr = document.querySelector('.hdr');
+  if (hdr) document.querySelector('.tab-wrap').style.top = hdr.offsetHeight + 'px';
+}
+window.addEventListener('load', updateTabTop);
+window.addEventListener('resize', updateTabTop);
+setTimeout(updateTabTop, 100);
 function setDateParts(id, val) {
   const parts = String(val || '').split('.');
   const yy = document.getElementById(id + '-yy');
@@ -891,8 +901,7 @@ async function loadCapacity() {
 loadCapacity();
 
 // ── 모드 전환 ─────────────────────────────────────────────────
-function setMode(m, e) {
-  if (e) { e.preventDefault(); e.stopPropagation(); }
+function setMode(m) {
   mode = m; linked = null;
   ['in','out','dis'].forEach(x => {
     document.getElementById('btn-'+x).className = 'mode-btn' + (m===x ? ` on-${x}` : '');
@@ -988,9 +997,6 @@ function linkIt(form, item) {
     codeInput.style.background = 'var(--in-bg)';
     codeInput.style.fontWeight = '700';
   }
-  // 날짜 결과 목록 숨기기
-  const dateEl = document.getElementById(form+'-date-results');
-  if (dateEl) dateEl.style.display = 'none';
   // 연결 완료 토스트
   const modeLabel = form === 'out' ? '출고' : '폐기';
   showT(`✅ ${item.name} 연결 완료!`, 'ok');
@@ -1401,6 +1407,34 @@ async function relabelSearch() {
 window.addEventListener('resize', () => {
   if (document.getElementById('label-screen').classList.contains('show')) scaleLabel();
 });
+
+// ── 전역 등록 (미리보기/CSP 환경 인라인 onclick 대응) ──────────
+window.setMode = setMode;
+window.selZone = selZone;
+window.selReason = selReason;
+window.cqty = cqty;
+window.swTab = swTab;
+window.linkIt = linkIt;
+window.submit = submit;
+window.setToday = setToday;
+window.stepDatePart = stepDatePart;
+window.syncDate = syncDate;
+window.onCodeInput = onCodeInput;
+window.searchByDate = searchByDate;
+window.onCode = onCode;
+window.onNsearch = onNsearch;
+window.previewItem = previewItem;
+window.showLabel = showLabel;
+window.saveLabel = saveLabel;
+window.closeLabel = closeLabel;
+window.copyCode = copyCode;
+window.nextE = nextE;
+window.resetAll = resetAll;
+window.showManual = showManual;
+window.closeManual = closeManual;
+window.switchManualTab = switchManualTab;
+window.toggleRelabel = toggleRelabel;
+window.relabelSearch = relabelSearch;
 </script>
 </body>
 </html>
