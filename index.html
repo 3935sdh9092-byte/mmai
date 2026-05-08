@@ -66,9 +66,9 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 
 /* 수량 */
 .qty-row{display:flex;align-items:center;gap:8px}
-.qty-btn{width:40px;height:40px;border:1.5px solid var(--g200);border-radius:var(--r-sm);background:var(--g50);font-size:20px;color:var(--g600);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
+.qty-btn{width:48px;height:48px;border:1.5px solid var(--g200);border-radius:var(--r-sm);background:var(--g50);font-size:20px;color:var(--g600);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
 .qty-btn:active{transform:scale(.9);background:var(--g100)}
-.qty-inp{width:80px;min-width:80px;max-width:80px;text-align:center;font-size:16px;font-weight:700;border:1.5px solid var(--g200);border-radius:var(--r-sm);padding:10px 4px;background:var(--g50);color:var(--g800);font-family:var(--font);outline:none;-webkit-appearance:none}
+.qty-inp{flex:1;text-align:center;font-size:15px;font-weight:700;border:1.5px solid var(--g200);border-radius:var(--r-sm);padding:12px 13px;background:var(--g50);color:var(--g800);font-family:var(--font);outline:none;-webkit-appearance:none;transition:border-color .15s,box-shadow .15s}
 .qty-inp:focus{border-color:var(--accent);background:var(--white)}
 .qty-hint{margin-top:8px;font-size:11px;color:var(--g400);line-height:1.6}
 
@@ -207,7 +207,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 
 <!-- 용량 게이지 -->
 <div class="cap-bar-wrap">
-  <div class="cap-top"><span>창고 사용량</span><span id="cap-text">불러오는 중...</span></div>
+  <div class="cap-top"><span>창고 사용량</span><span id="cap-text"></span></div>
   <div class="cap-bar-bg"><div class="cap-bar-fill" id="cap-fill" style="width:0%"></div></div>
   <div class="cap-warn" id="cap-warn"></div>
 </div>
@@ -659,7 +659,10 @@ function fetchGET(url) {
 // ── 용량 게이지 ───────────────────────────────────────────────
 async function loadCapacity() {
   try {
-    const data = await fetchGET(APPS_URL + '?action=getCapacity');
+    const data = await Promise.race([
+      fetchGET(APPS_URL + '?action=getCapacity'),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+    ]);
     if (data && data.total !== undefined) {
       const pct  = data.pct || 0;
       const fill = document.getElementById('cap-fill');
@@ -671,7 +674,10 @@ async function loadCapacity() {
       else if (pct >= 70) { fill.style.background='#f57c00'; warn.style.display='block'; warn.style.color='#f57c00'; warn.textContent='🟠 경고1: 정리 필요'; }
       else                { fill.style.background='var(--in)'; warn.style.display='none'; }
     }
-  } catch(e) { document.getElementById('cap-text').textContent = ''; }
+  } catch(e) {
+    document.getElementById('cap-text').textContent = '-';
+    document.getElementById('cap-fill').style.width = '0%';
+  }
 }
 loadCapacity();
 
