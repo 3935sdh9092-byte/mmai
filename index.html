@@ -22,14 +22,38 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 /* HEADER */
 .hdr{background:var(--white);padding:14px 18px 0;border-bottom:1px solid var(--g100);position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.05)}
 .hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.hdr-btn{font-size:11px;padding:4px 10px;border:1.5px solid var(--g200);border-radius:20px;background:var(--white);color:var(--g500,#6b7684);font-family:var(--font);font-weight:700;cursor:pointer;white-space:nowrap}
 .logo{font-size:15px;font-weight:900;color:var(--g800)}.logo em{color:var(--accent);font-style:normal}
 .date-pill{font-size:11px;background:var(--g100);color:var(--g600);padding:4px 10px;border-radius:20px;font-weight:500}
-.mode-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--g100);border-radius:11px;padding:3px;gap:3px}
+.mode-toggle{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;background:var(--g100);border-radius:11px;padding:3px;gap:3px}
 .tab-wrap{position:sticky;top:var(--hdr-h,0);z-index:49;background:var(--white);padding:8px 14px 10px;border-bottom:1px solid var(--g100)}
 .mode-btn{padding:10px 0;border:none;border-radius:9px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;background:transparent;color:var(--g400)}
 .mode-btn.on-in{background:var(--in);color:#fff;box-shadow:0 2px 8px var(--in-glow)}
 .mode-btn.on-out{background:var(--out);color:#fff;box-shadow:0 2px 8px var(--out-glow)}
 .mode-btn.on-dis{background:var(--dis);color:#fff;box-shadow:0 2px 8px var(--dis-glow)}
+.mode-btn.on-stk{background:#1A4F8A;color:#fff;box-shadow:0 2px 8px rgba(26,79,138,.3)}
+/* 재고 화면 */
+.stk-filter{display:flex;gap:6px;flex-wrap:wrap;padding:0 0 12px}
+
+.stk-filter-btn{padding:5px 12px;border:1.5px solid var(--g200);border-radius:20px;background:var(--white);font-family:var(--font);font-size:12px;font-weight:700;color:var(--g500,#6b7684);cursor:pointer;transition:all .15s}
+.stk-filter-btn.sel{background:#1A4F8A;border-color:#1A4F8A;color:#fff}
+.stk-list{display:flex;flex-direction:column;gap:8px}
+.stk-item{background:var(--white);border:1.5px solid var(--g100);border-radius:var(--r);padding:12px 14px;cursor:pointer;transition:all .15s}
+.stk-item:active{transform:scale(.98);background:var(--g50)}
+.stk-item-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.stk-item-name{font-size:14px;font-weight:700;color:var(--g800)}
+.stk-item-code{font-size:11px;color:var(--g400);font-family:var(--mono)}
+.stk-item-row{font-size:12px;color:var(--g500,#6b7684);margin-top:2px;display:flex;gap:12px;flex-wrap:wrap}
+.stk-item-zone{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--in-bg);color:var(--in)}
+.stk-action-row{display:flex;gap:8px;margin-top:10px}
+.stk-action-btn{flex:1;padding:8px 0;border:none;border-radius:8px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+.stk-action-btn:active{transform:scale(.97)}
+.stk-action-out{background:var(--out-bg);color:var(--out)}
+.stk-action-dis{background:var(--dis-bg);color:var(--dis)}
+.stk-empty{text-align:center;padding:40px 20px;color:var(--g400);font-size:14px}
+/* 연속 등록 버튼 */
+.btn-cont{height:52px;padding:0 20px;border:1.5px solid var(--in);border-radius:var(--r);background:var(--in-bg);color:var(--in);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s}
+.btn-cont:active{transform:scale(.97)}
 
 /* 용량 게이지 */
 .cap-bar-wrap{padding:8px 18px 12px;background:var(--white);margin-top:10px}
@@ -237,9 +261,11 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 <!-- HEADER -->
 <div class="hdr">
   <div class="hdr-top">
-    <div style="display:flex;align-items:center;gap:10px"><div class="logo">1호<em>창고</em></div><button onclick="showManual()" style="font-size:11px;padding:4px 10px;border:1.5px solid var(--accent);border-radius:20px;background:var(--white);color:var(--accent);font-family:var(--font);font-weight:700;cursor:pointer">📋 매뉴얼</button></div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <button onclick="toggleRelabel()" style="font-size:11px;padding:4px 10px;border:1.5px solid var(--g200);border-radius:20px;background:var(--white);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">🏷 라벨재출력</button>
+    <div class="logo">1호<em>창고</em></div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <button onclick="toggleRelabel()" class="hdr-btn">라벨재출력</button>
+      <button onclick="toggleEditBar()" class="hdr-btn">수정</button>
+      <button onclick="showManual()" class="hdr-btn">매뉴얼</button>
       <div class="date-pill" id="date-pill"></div>
     </div>
   </div>
@@ -256,6 +282,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     <button class="mode-btn on-in" id="btn-in"  onclick="setMode('in')">📦 입고</button>
     <button class="mode-btn"       id="btn-out" onclick="setMode('out')">📤 출고</button>
     <button class="mode-btn"       id="btn-dis" onclick="setMode('dis')">🗑 폐기</button>
+    <button class="mode-btn"       id="btn-stk" onclick="setMode('stk')">📋 재고</button>
   </div>
 </div>
 
@@ -532,6 +559,24 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     <textarea class="ta" id="dis-note" placeholder="처리 방법, 전달사항 등"></textarea>
   </div>
 </div><!-- /form-dis -->
+
+<!-- 재고 탭 -->
+<div id="form-stk" style="display:none">
+  <div class="card">
+    <div class="stk-filter" id="stk-filter">
+      <button class="stk-filter-btn sel" onclick="filterStk('all',this)">전체</button>
+      <button class="stk-filter-btn" onclick="filterStk('1구역',this)">1구역</button>
+      <button class="stk-filter-btn" onclick="filterStk('2구역',this)">2구역</button>
+      <button class="stk-filter-btn" onclick="filterStk('3구역',this)">3구역</button>
+      <button class="stk-filter-btn" onclick="filterStk('4구역',this)">4구역</button>
+      <button class="stk-filter-btn" onclick="filterStk('5구역',this)">5구역</button>
+      <button class="stk-filter-btn" onclick="filterStk('6구역',this)">6구역</button>
+    </div>
+    <div class="stk-list" id="stk-list">
+      <div class="stk-empty">재고를 불러오는 중...</div>
+    </div>
+  </div>
+</div>
 
 </div><!-- /body -->
 
@@ -1028,13 +1073,23 @@ loadCapacity();
 // ── 모드 전환 ─────────────────────────────────────────────────
 function setMode(m) {
   mode = m; linked = null;
-  ['in','out','dis'].forEach(x => {
+  ['in','out','dis','stk'].forEach(x => {
     document.getElementById('btn-'+x).className = 'mode-btn' + (m===x ? ` on-${x}` : '');
     document.getElementById('form-'+x).style.display = m===x ? 'block' : 'none';
   });
+  // submit bar: 재고 탭에선 숨김, 입고 탭에서만 연속등록 표시
   const sub = document.getElementById('btn-sub');
-  sub.textContent = {in:'📦 입고 등록', out:'📤 출고 등록', dis:'🗑 폐기 처리'}[m];
-  sub.className = `btn-sub ${m}-mode`;
+  const submitBar = document.querySelector('.submit-bar');
+  const contBtn = document.getElementById('btn-cont');
+  if (m === 'stk') {
+    submitBar.style.display = 'none';
+    loadStock();
+  } else {
+    submitBar.style.display = 'flex';
+    sub.textContent = {in:'📦 입고 등록', out:'📤 출고 등록', dis:'🗑 폐기 처리'}[m];
+    sub.className = `btn-sub ${m}-mode`;
+    contBtn.style.display = m === 'in' ? 'flex' : 'none';
+  }
 }
 
 // ── 구역 선택 ─────────────────────────────────────────────────
@@ -1678,6 +1733,126 @@ function selEditZone(val, el) {
   document.getElementById('edit-zone').value = val;
 }
 
+
+// ── 📋 재고 탭 ────────────────────────────────────────────────
+let _stkAll = [];
+let _stkZone = 'all';
+
+async function loadStock() {
+  const list = document.getElementById('stk-list');
+  list.innerHTML = '<div class="stk-empty">불러오는 중...</div>';
+  try {
+    const data = await fetchGET(`${APPS_URL}?action=search&q=`);
+    _stkAll = (data && data.results) ? data.results : [];
+    renderStk();
+  } catch(e) {
+    list.innerHTML = '<div class="stk-empty">불러오기 실패. 다시 시도해주세요.</div>';
+  }
+}
+
+function filterStk(zone, el) {
+  _stkZone = zone;
+  document.querySelectorAll('.stk-filter-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  renderStk();
+}
+
+function renderStk() {
+  const list = document.getElementById('stk-list');
+  const items = _stkZone === 'all' ? _stkAll : _stkAll.filter(r => r.zone === _stkZone);
+  if (!items.length) {
+    list.innerHTML = `<div class="stk-empty">${_stkZone === 'all' ? '보유 재고가 없어요' : `${_stkZone}에 보유 재고가 없어요`}</div>`;
+    return;
+  }
+  list.innerHTML = items.map(r => `
+    <div class="stk-item">
+      <div class="stk-item-top">
+        <div class="stk-item-name">${r.name}</div>
+        <span class="stk-item-zone">${r.zone || '-'}</span>
+      </div>
+      <div class="stk-item-code">${r.code}</div>
+      <div class="stk-item-row">
+        <span>📦 ${r.qty}개</span>
+        <span>🏪 ${r.store}</span>
+        ${r.spec ? `<span>📝 ${r.spec.slice(0,20)}${r.spec.length>20?'…':''}</span>` : ''}
+      </div>
+      <div class="stk-action-row">
+        <button class="stk-action-btn stk-action-out" onclick='stkGoOut(${JSON.stringify(r)})'>📤 출고 연결</button>
+        <button class="stk-action-btn stk-action-dis" onclick='stkGoDis(${JSON.stringify(r)})'>🗑 폐기 연결</button>
+      </div>
+    </div>`).join('');
+}
+
+function stkGoOut(item) {
+  setMode('out');
+  // 약간 딜레이 후 연결 (폼 렌더링 대기)
+  setTimeout(() => {
+    linked = item;
+    const codeEl = document.getElementById('out-code');
+    if (codeEl) {
+      codeEl.value = item.code;
+      codeEl.style.borderColor = 'var(--out)';
+      codeEl.style.background  = 'var(--out-bg)';
+      codeEl.style.fontWeight  = '700';
+    }
+    // 연결 정보 표시
+    const infoEl = document.getElementById('out-linked-info');
+    if (infoEl) {
+      infoEl.style.display = 'block';
+      infoEl.innerHTML = `<strong>${item.name}</strong> · ${item.store} · ${item.zone} · ${item.qty}개`;
+    }
+    showT(`✅ ${item.name} 연결됐어요`, 'ok');
+    window.scrollTo(0, 0);
+  }, 100);
+}
+
+function stkGoDis(item) {
+  setMode('dis');
+  setTimeout(() => {
+    linked = item;
+    const codeEl = document.getElementById('dis-code');
+    if (codeEl) {
+      codeEl.value = item.code;
+      codeEl.style.borderColor = 'var(--dis)';
+      codeEl.style.background  = 'var(--dis-bg)';
+      codeEl.style.fontWeight  = '700';
+    }
+    const infoEl = document.getElementById('dis-linked-info');
+    if (infoEl) {
+      infoEl.style.display = 'block';
+      infoEl.innerHTML = `<strong>${item.name}</strong> · ${item.store} · ${item.zone} · ${item.qty}개`;
+    }
+    showT(`✅ ${item.name} 연결됐어요`, 'ok');
+    window.scrollTo(0, 0);
+  }, 100);
+}
+
+// ── 📦 연속 등록 ────────────────────────────────────────────────
+async function submitAndContinue() {
+  // 기존 submit과 동일하지만 완료 후 담당자/매장/날짜 유지
+  const store   = document.getElementById('in-store').value.trim();
+  const date    = document.getElementById('in-date').value.trim();
+  const worker  = document.getElementById('in-worker').value.trim();
+  const request = document.getElementById('in-requester').value.trim();
+
+  // 일반 submit 실행
+  await submit();
+
+  // submit 후 위 값들 복원
+  setTimeout(() => {
+    if (store)   document.getElementById('in-store').value    = store;
+    if (date)    document.getElementById('in-date').value     = date;
+    if (worker)  document.getElementById('in-worker').value   = worker;
+    if (request) document.getElementById('in-requester').value = request;
+    // 날짜 UI도 복원
+    if (date) setDateParts('in-date', date);
+    showT('✅ 등록 완료! 다음 항목을 입력하세요', 'ok');
+    // 집기 종류로 스크롤
+    const el = document.getElementById('in-category');
+    if (el) el.focus();
+  }, 300);
+}
+
 // ── 전역 등록 (미리보기/CSP 환경 인라인 onclick 대응) ──────────
 window.setMode = setMode;
 window.selZone = selZone;
@@ -1712,6 +1887,11 @@ window.deleteItem = deleteItem;
 window.closeEdit = closeEdit;
 window.selEditZone = selEditZone;
 window.setNone = setNone;
+window.loadStock = loadStock;
+window.filterStk = filterStk;
+window.stkGoOut = stkGoOut;
+window.stkGoDis = stkGoDis;
+window.submitAndContinue = submitAndContinue;
 </script>
 </body>
 </html>
