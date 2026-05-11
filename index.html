@@ -433,6 +433,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
       <input class="qty-inp" id="out-qty" type="number" value="1" min="1">
       <button class="qty-btn" onclick="cqty('out',1)">+</button>
     </div>
+    <div class="qty-hint" id="out-qty-hint" style="display:none"></div>
   </div>
 
   <div class="card">
@@ -920,6 +921,23 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 
 <div class="toast" id="toast"></div>
 
+<!-- 삭제 확인 모달 -->
+<div id="delete-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:16px;padding:24px 20px;width:100%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+    <div style="font-size:32px;text-align:center;margin-bottom:12px">🗑</div>
+    <div style="font-size:17px;font-weight:900;color:#1e2330;text-align:center;margin-bottom:6px">정말 삭제할까요?</div>
+    <div style="font-size:13px;color:#5a6475;text-align:center;margin-bottom:4px">아래 항목이 <strong>입출고_로그</strong>와 <strong>현재재고</strong>에서<br>모두 삭제됩니다. 되돌릴 수 없어요.</div>
+    <div style="background:#fdecea;border:1.5px solid #c0392b;border-radius:10px;padding:10px 14px;margin:14px 0;text-align:center">
+      <div style="font-size:11px;color:#c0392b;font-weight:700;margin-bottom:3px">삭제 대상 관리번호</div>
+      <div id="del-code-txt" style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:#c0392b;letter-spacing:1px"></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="closeDeleteModal()" style="flex:1;height:48px;border:1.5px solid #dde0e6;border-radius:12px;background:#fff;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;color:#5a6475;cursor:pointer">취소</button>
+      <button onclick="confirmDelete()" style="flex:1;height:48px;border:none;border-radius:12px;background:#c0392b;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer">삭제</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 // ── 설정 ──────────────────────────────────────────────────────
@@ -1180,6 +1198,22 @@ function linkIt(form, item) {
   // 연결 완료 토스트
   const modeLabel = form === 'out' ? '출고' : '폐기';
   showT(`✅ ${item.name} 연결 완료!`, 'ok');
+
+  // 출고/폐기 수량 힌트 표시
+  if (form === 'out') {
+    const hint = document.getElementById('out-qty-hint');
+    if (hint) {
+      hint.style.display = 'block';
+      hint.innerHTML = `📦 보유 수량: <strong>${item.qty}개</strong> — 일부만 출고하면 나머지는 재고에 남아요`;
+    }
+    // 수량 초기값을 보유수량으로
+    const qtyEl = document.getElementById('out-qty');
+    if (qtyEl) qtyEl.value = item.qty || '1';
+  }
+  if (form === 'dis') {
+    const qtyEl = document.getElementById('dis-qty');
+    if (qtyEl) qtyEl.value = item.qty || '1';
+  }
 }
 
 // ── 유효성 검사 ───────────────────────────────────────────────
@@ -1240,38 +1274,48 @@ async function submit() {
       linkedCode: '',
     };
   } else if (mode === 'out') {
+    const outQty   = parseInt(document.getElementById('out-qty').value) || 1;
+    const stockQty = parseInt(linked.qty) || 1;
+    const remainQty = stockQty - outQty;
+    if (outQty > stockQty) { showT(`출고 수량(${outQty})이 보유 수량(${stockQty})을 초과해요`, 'err'); return; }
     p = {
-      mode:       '출고',
-      code:       linked.code,
-      linkedCode: linked.code,
-      store:      linked.store || '',
-      date:       document.getElementById('out-date').value.trim(),
-      worker:     document.getElementById('out-worker').value.trim(),
-      requester:  document.getElementById('out-requester').value.trim(),
-      category:   linked.name,
-      qty:        linked.qty || '1',
-      spec:       linked.spec || '',
-      size:       linked.size || '',
-      zone:       linked.zone || '',
-      memo:       document.getElementById('out-dest').value.trim(),
-      note:       document.getElementById('out-note').value.trim(),
+      mode:        '출고',
+      code:        linked.code,
+      linkedCode:  linked.code,
+      store:       linked.store || '',
+      date:        document.getElementById('out-date').value.trim(),
+      worker:      document.getElementById('out-worker').value.trim(),
+      requester:   document.getElementById('out-requester').value.trim(),
+      category:    linked.name,
+      qty:         String(outQty),
+      remainQty:   String(remainQty),   // 잔여 수량 (Apps Script에서 처리)
+      spec:        linked.spec || '',
+      size:        linked.size || '',
+      zone:        linked.zone || '',
+      memo:        document.getElementById('out-dest').value.trim(),  // 출고지
+      note:        document.getElementById('out-note').value.trim(),
     };
   } else {
+    const disQty   = parseInt(document.getElementById('dis-qty').value) || 1;
+    const stockQty2 = parseInt(linked.qty) || 1;
+    const remainQty2 = stockQty2 - disQty;
+    if (disQty > stockQty2) { showT(`폐기 수량(${disQty})이 보유 수량(${stockQty2})을 초과해요`, 'err'); return; }
     p = {
-      mode:       '폐기',
-      code:       linked.code,
-      linkedCode: linked.code,
-      store:      linked.store || '',
-      date:       document.getElementById('dis-date').value.trim(),
-      worker:     document.getElementById('dis-worker').value.trim(),
-      requester:  document.getElementById('dis-requester').value.trim(),
-      category:   linked.name,
-      qty:        linked.qty || '1',
-      spec:       linked.spec || '',
-      size:       linked.size || '',
-      zone:       linked.zone || '',
-      memo:       document.getElementById('dis-reason').value,
-      note:       document.getElementById('dis-note').value.trim(),
+      mode:        '폐기',
+      code:        linked.code,
+      linkedCode:  linked.code,
+      store:       linked.store || '',
+      date:        document.getElementById('dis-date').value.trim(),
+      worker:      document.getElementById('dis-worker').value.trim(),
+      requester:   document.getElementById('dis-requester').value.trim(),
+      category:    linked.name,
+      qty:         String(disQty),
+      remainQty:   String(remainQty2),
+      spec:        linked.spec || '',
+      size:        linked.size || '',
+      zone:        linked.zone || '',
+      memo:        document.getElementById('dis-reason').value,
+      note:        document.getElementById('dis-note').value.trim(),
     };
   }
 
@@ -1703,8 +1747,22 @@ async function saveEdit() {
 async function deleteItem() {
   const code = window._editCode;
   if (!code) return;
-  if (!confirm(`[${code}] 을 삭제할까요?\n입출고_로그와 현재재고에서 모두 삭제됩니다.`)) return;
+  showDeleteConfirm(code);
+}
 
+function showDeleteConfirm(code) {
+  document.getElementById('del-code-txt').textContent = code;
+  document.getElementById('delete-modal').style.display = 'flex';
+}
+
+function closeDeleteModal() {
+  document.getElementById('delete-modal').style.display = 'none';
+}
+
+async function confirmDelete() {
+  const code = window._editCode;
+  if (!code) return;
+  closeDeleteModal();
   document.getElementById('loading').classList.add('show');
   try {
     const data = await fetchGET(`${APPS_URL}?action=delete&code=${encodeURIComponent(code)}`);
@@ -1772,7 +1830,7 @@ function renderStk() {
       </div>
       <div class="stk-item-code">${r.code}</div>
       <div class="stk-item-row">
-        <span>📦 ${r.qty}개</span>
+        <span>📦 <strong>${r.qty}개</strong></span>
         <span>🏪 ${r.store}</span>
         ${r.spec ? `<span>📝 ${r.spec.slice(0,20)}${r.spec.length>20?'…':''}</span>` : ''}
       </div>
@@ -1785,7 +1843,6 @@ function renderStk() {
 
 function stkGoOut(item) {
   setMode('out');
-  // 약간 딜레이 후 연결 (폼 렌더링 대기)
   setTimeout(() => {
     linked = item;
     const codeEl = document.getElementById('out-code');
@@ -1795,15 +1852,13 @@ function stkGoOut(item) {
       codeEl.style.background  = 'var(--out-bg)';
       codeEl.style.fontWeight  = '700';
     }
-    // 연결 정보 표시
-    const infoEl = document.getElementById('out-linked-info');
-    if (infoEl) {
-      infoEl.style.display = 'block';
-      infoEl.innerHTML = `<strong>${item.name}</strong> · ${item.store} · ${item.zone} · ${item.qty}개`;
-    }
-    showT(`✅ ${item.name} 연결됐어요`, 'ok');
+    // 수량 자동 세팅
+    const qtyEl = document.getElementById('out-qty');
+    if (qtyEl) qtyEl.value = item.qty || '1';
+    // 연결 미리보기 표시
+    linkIt('out', item);
     window.scrollTo(0, 0);
-  }, 100);
+  }, 150);
 }
 
 function stkGoDis(item) {
@@ -1817,14 +1872,13 @@ function stkGoDis(item) {
       codeEl.style.background  = 'var(--dis-bg)';
       codeEl.style.fontWeight  = '700';
     }
-    const infoEl = document.getElementById('dis-linked-info');
-    if (infoEl) {
-      infoEl.style.display = 'block';
-      infoEl.innerHTML = `<strong>${item.name}</strong> · ${item.store} · ${item.zone} · ${item.qty}개`;
-    }
-    showT(`✅ ${item.name} 연결됐어요`, 'ok');
+    // 수량 자동 세팅
+    const qtyEl = document.getElementById('dis-qty');
+    if (qtyEl) qtyEl.value = item.qty || '1';
+    // 연결 미리보기 표시
+    linkIt('dis', item);
     window.scrollTo(0, 0);
-  }, 100);
+  }, 150);
 }
 
 // ── 📦 연속 등록 ────────────────────────────────────────────────
@@ -1892,6 +1946,9 @@ window.filterStk = filterStk;
 window.stkGoOut = stkGoOut;
 window.stkGoDis = stkGoDis;
 window.submitAndContinue = submitAndContinue;
+window.showDeleteConfirm = showDeleteConfirm;
+window.closeDeleteModal = closeDeleteModal;
+window.confirmDelete = confirmDelete;
 </script>
 </body>
 </html>
