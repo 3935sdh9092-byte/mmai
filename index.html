@@ -742,6 +742,11 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
       <div class="card-ttl"><span class="dot g"></span>특이사항</div>
       <textarea class="ta" id="edit-note" placeholder="파손 여부, 주의사항 등"></textarea>
     </div>
+    <!-- 수정 담당자 -->
+    <div class="card">
+      <div class="card-ttl"><span class="dot g"></span>수정 담당자 <span class="req">*</span></div>
+      <input class="inp" id="edit-modifier" type="text" placeholder="수정한 사람 이름 (예: 최류정 대리)" autocomplete="off">
+    </div>
   </div>
   <!-- 저장/삭제 버튼 -->
   <div class="edit-submit-bar">
@@ -922,24 +927,57 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 <div class="toast" id="toast"></div>
 
 <!-- 삭제 확인 모달 -->
-<div id="delete-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#fff;border-radius:16px;padding:24px 20px;width:100%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.18)">
-    <div style="font-size:32px;text-align:center;margin-bottom:12px">🗑</div>
-    <div style="font-size:17px;font-weight:900;color:#1e2330;text-align:center;margin-bottom:6px">정말 삭제할까요?</div>
-    <div style="font-size:13px;color:#5a6475;text-align:center;margin-bottom:4px">삭제 이력이 로그에 남습니다.<br>되돌릴 수 없어요.</div>
-    <div style="background:#fdecea;border:1.5px solid #c0392b;border-radius:10px;padding:10px 14px;margin:14px 0;text-align:center">
-      <div style="font-size:11px;color:#c0392b;font-weight:700;margin-bottom:3px">삭제 대상 관리번호</div>
-      <div id="del-code-txt" style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:#c0392b;letter-spacing:1px"></div>
+<div id="delete-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;padding:16px;overflow-y:auto">
+  <div style="background:#fff;border-radius:16px;padding:22px 18px;width:100%;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.18);margin:auto">
+    <div style="font-size:28px;text-align:center;margin-bottom:10px">🗑</div>
+    <div style="font-size:16px;font-weight:900;color:#1e2330;text-align:center;margin-bottom:4px">삭제 방법을 선택해주세요</div>
+    <div style="background:#fdecea;border:1.5px solid #c0392b;border-radius:10px;padding:8px 14px;margin:12px 0;text-align:center">
+      <div style="font-size:10px;color:#c0392b;font-weight:700;margin-bottom:2px">대상 관리번호</div>
+      <div id="del-code-txt" style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#c0392b;letter-spacing:1px"></div>
     </div>
-    <div style="margin-bottom:14px">
-      <label style="display:block;font-size:12px;font-weight:700;color:#5a6475;margin-bottom:6px">삭제 담당자 이름 <span style="color:#c0392b">*</span></label>
+
+    <!-- 케이스 A: 출고/폐기 취소 -->
+    <div id="del-case-a" onclick="selectDelCase('a')"
+      style="border:2px solid #dde0e6;border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <div id="del-radio-a" style="width:16px;height:16px;border-radius:50%;border:2px solid #dde0e6;flex-shrink:0"></div>
+        <div style="font-size:13px;font-weight:800;color:#1e2330">출고 / 폐기 기록 취소</div>
+      </div>
+      <div style="font-size:12px;color:#5a6475;padding-left:24px;line-height:1.5">
+        잘못 등록한 출고·폐기 기록을 <strong>취소</strong>하고<br>재고 수량을 원래대로 <strong>복원</strong>합니다.<br>
+        <span style="color:#1A4F8A;font-size:11px">→ 입출고_로그 해당 행 상태: <strong>취소</strong></span>
+      </div>
+      <div id="del-a-linked" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid #eee">
+        <label style="font-size:11px;font-weight:700;color:#5a6475;display:block;margin-bottom:4px">취소할 출고/폐기 관리번호</label>
+        <input id="del-linked-code" type="text" placeholder="예: 20260511_02 (출고·폐기 번호)"
+          style="width:100%;border:1.5px solid #dde0e6;border-radius:8px;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#1e2330;outline:none;background:#f7f8fa;box-sizing:border-box">
+      </div>
+    </div>
+
+    <!-- 케이스 B: 잔여 재고 삭제 -->
+    <div id="del-case-b" onclick="selectDelCase('b')"
+      style="border:2px solid #dde0e6;border-radius:12px;padding:12px 14px;margin-bottom:12px;cursor:pointer;transition:border-color .15s">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <div id="del-radio-b" style="width:16px;height:16px;border-radius:50%;border:2px solid #dde0e6;flex-shrink:0"></div>
+        <div style="font-size:13px;font-weight:800;color:#1e2330">입고 기록 전체 삭제</div>
+      </div>
+      <div style="font-size:12px;color:#5a6475;padding-left:24px;line-height:1.5">
+        입고 자체를 <strong>없던 것으로</strong> 처리합니다.<br>재고에서 제거되고 출고·폐기 이력은 유지돼요.<br>
+        <span style="color:#c0392b;font-size:11px">→ 입출고_로그 상태: <strong>삭제</strong> / 재고 제거</span>
+      </div>
+    </div>
+
+    <!-- 담당자 입력 -->
+    <div style="margin-bottom:12px">
+      <label style="display:block;font-size:12px;font-weight:700;color:#5a6475;margin-bottom:5px">처리 담당자 <span style="color:#c0392b">*</span></label>
       <input id="del-worker-inp" type="text" placeholder="예: 최류정 대리"
-        style="width:100%;border:1.5px solid #dde0e6;border-radius:10px;padding:11px 13px;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:#1e2330;outline:none;background:#f7f8fa"
+        style="width:100%;border:1.5px solid #dde0e6;border-radius:10px;padding:10px 12px;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:#1e2330;outline:none;background:#f7f8fa;box-sizing:border-box"
         oninput="this.style.borderColor=this.value.trim()?'var(--in)':'#dde0e6'">
     </div>
+
     <div style="display:flex;gap:8px">
-      <button onclick="closeDeleteModal()" style="flex:1;height:48px;border:1.5px solid #dde0e6;border-radius:12px;background:#fff;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;color:#5a6475;cursor:pointer">취소</button>
-      <button onclick="confirmDelete()" style="flex:1;height:48px;border:none;border-radius:12px;background:#c0392b;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer">삭제</button>
+      <button onclick="closeDeleteModal()" style="flex:1;height:46px;border:1.5px solid #dde0e6;border-radius:12px;background:#fff;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;color:#5a6475;cursor:pointer">취소</button>
+      <button onclick="confirmDelete()" style="flex:1;height:46px;border:none;border-radius:12px;background:#c0392b;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer">처리</button>
     </div>
   </div>
 </div>
@@ -1689,7 +1727,8 @@ function openEditScreen(item) {
   document.getElementById('edit-size').value     = item.size   || '';
   document.getElementById('edit-parts').value    = item.parts  || '';
   document.getElementById('edit-zone').value     = item.zone   || '';
-  document.getElementById('edit-note').value     = item.memo   || '';
+  document.getElementById('edit-note').value     = item.note   || '';  // 특이사항
+  document.getElementById('edit-modifier').value = '';                  // 수정 담당자는 매번 입력
 
   // 회수일 세팅
   if (item.date) setDateParts('edit-date', item.date);
@@ -1711,28 +1750,31 @@ function openEditScreen(item) {
 
 // ── ✏️ 수정 저장 ────────────────────────────────────────────────
 async function saveEdit() {
-  const code = window._editCode;
+  const code     = window._editCode;
   if (!code) return;
   const category = document.getElementById('edit-category').value.trim();
   const store    = document.getElementById('edit-store').value.trim();
   const worker   = document.getElementById('edit-worker').value.trim();
+  const modifier = document.getElementById('edit-modifier').value.trim();
   if (!category) { showT('집기 종류를 입력해주세요', 'err'); return; }
   if (!store)    { showT('회수 매장을 입력해주세요', 'err'); return; }
   if (!worker)   { showT('회수 담당자를 입력해주세요', 'err'); return; }
+  if (!modifier) { showT('수정 담당자를 입력해주세요', 'err'); return; }
 
   const p = {
     action:   'edit',
-    code:     code,
-    category: category,
-    store:    store,
+    code,
+    category,
+    store,
     date:     document.getElementById('edit-date').value.trim(),
-    worker:   worker,
+    worker,
+    modifier,   // 수정 담당자 → Apps Script에서 특이사항에 "[수정:이름 일시]" 형태로 기록
     qty:      document.getElementById('edit-qty').value,
     spec:     document.getElementById('edit-spec').value.trim(),
     size:     document.getElementById('edit-size').value.trim(),
     parts:    document.getElementById('edit-parts').value.trim(),
     zone:     document.getElementById('edit-zone').value,
-    memo:     document.getElementById('edit-note').value.trim(),
+    note:     document.getElementById('edit-note').value.trim(),
   };
 
   document.getElementById('loading').classList.add('show');
@@ -1759,40 +1801,76 @@ async function deleteItem() {
 function showDeleteConfirm(code) {
   document.getElementById('del-code-txt').textContent = code;
   const inp = document.getElementById('del-worker-inp');
-  inp.value = '';
-  inp.style.borderColor = '#dde0e6';
+  inp.value = ''; inp.style.borderColor = '#dde0e6';
+  // 케이스 초기화
+  selectDelCase(null);
+  document.getElementById('del-linked-code').value = '';
   document.getElementById('delete-modal').style.display = 'flex';
-  setTimeout(() => inp.focus(), 100);
+  setTimeout(() => inp.focus(), 200);
+}
+
+function selectDelCase(c) {
+  window._delCase = c;
+  const colors = { a: '#1A4F8A', b: '#c0392b' };
+  ['a','b'].forEach(x => {
+    const box   = document.getElementById(`del-case-${x}`);
+    const radio = document.getElementById(`del-radio-${x}`);
+    const active = c === x;
+    box.style.borderColor   = active ? colors[x] : '#dde0e6';
+    box.style.background    = active ? (x==='a' ? '#EAF2FF' : '#fdecea') : '#fff';
+    radio.style.background  = active ? colors[x] : '#fff';
+    radio.style.borderColor = active ? colors[x] : '#dde0e6';
+  });
+  // A 선택 시 연결번호 입력 표시
+  document.getElementById('del-a-linked').style.display = c === 'a' ? 'block' : 'none';
 }
 
 function closeDeleteModal() {
   document.getElementById('delete-modal').style.display = 'none';
+  window._delCase = null;
 }
 
 async function confirmDelete() {
-  const code = window._editCode;
+  const code   = window._editCode;
+  const delCase = window._delCase;
   if (!code) return;
+
+  // 유효성
+  if (!delCase) { showT('삭제 방법을 선택해주세요', 'err'); return; }
   const worker = document.getElementById('del-worker-inp').value.trim();
   if (!worker) {
     const inp = document.getElementById('del-worker-inp');
-    inp.style.borderColor = '#c0392b';
-    inp.focus();
-    inp.placeholder = '이름을 입력해야 삭제할 수 있어요';
-    return;
+    inp.style.borderColor = '#c0392b'; inp.focus();
+    inp.placeholder = '이름을 입력해야 처리할 수 있어요'; return;
   }
+
+  let params;
+  if (delCase === 'a') {
+    // 케이스 A: 출고/폐기 기록 취소 + 재고 복원
+    const linkedCode = document.getElementById('del-linked-code').value.trim();
+    if (!linkedCode) {
+      const inp = document.getElementById('del-linked-code');
+      inp.style.borderColor = '#c0392b'; inp.focus();
+      showT('취소할 출고/폐기 관리번호를 입력해주세요', 'err'); return;
+    }
+    params = new URLSearchParams({ action: 'cancelOutDis', code, linkedCode, worker });
+  } else {
+    // 케이스 B: 입고 전체 삭제
+    params = new URLSearchParams({ action: 'delete', code, worker });
+  }
+
   closeDeleteModal();
   document.getElementById('loading').classList.add('show');
   try {
-    const params = new URLSearchParams({ action: 'delete', code, worker });
     const data = await fetchGET(`${APPS_URL}?${params.toString()}`);
     if (data && data.success) {
-      showT('🗑 삭제 완료! 로그에 이력이 남았어요.', '');
+      showT(delCase === 'a' ? '↩️ 출고/폐기 취소 완료! 재고가 복원됐어요.' : '🗑 삭제 완료! 로그에 이력이 남았어요.', 'ok');
       closeEdit();
       loadCapacity();
     } else {
-      showT(data && data.message ? data.message : '삭제 실패. 다시 시도해주세요.', 'err');
+      showT(data && data.message ? data.message : '처리 실패. 다시 시도해주세요.', 'err');
     }
-  } catch(e) { showT('삭제 실패. 다시 시도해주세요.', 'err'); }
+  } catch(e) { showT('처리 실패. 다시 시도해주세요.', 'err'); }
   finally { document.getElementById('loading').classList.remove('show'); }
 }
 
@@ -1968,6 +2046,7 @@ window.submitAndContinue = submitAndContinue;
 window.showDeleteConfirm = showDeleteConfirm;
 window.closeDeleteModal = closeDeleteModal;
 window.confirmDelete = confirmDelete;
+window.selectDelCase = selectDelCase;
 </script>
 </body>
 </html>
