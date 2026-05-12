@@ -8,12 +8,18 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@600&display=swap');
 :root {
-  --in:#7A9B3A;    --in-bg:#E8F0C8;  --in-glow:rgba(183,201,106,.25);
-  --out:#4A8FC4;   --out-bg:#C8E2F5; --out-glow:rgba(127,185,230,.25);
-  --dis:#9A9A9A;   --dis-bg:#E8E8E8; --dis-glow:rgba(200,200,200,.2);
-  --accent:#FF8F45;
-  --g50:#FAFAF8;--g100:#F0F0ED;--g200:#E0DED8;--g400:#ACACAC;--g600:#666666;--g800:#1A1A1A;
-  --white:#fff;--r:16px;--r-sm:10px;
+  /* 기능색 */
+  --in:#8FAF96;        --in-bg:#D7E9D9;   /* Sage — 입고/보유 */
+  --out:#A4B1BA;       --out-bg:#DDE4E8;  /* Baby Blue — 출고 */
+  --dis:#D7A49A;       --dis-bg:#F2DDD9;  /* Dusty Rose — 폐기 */
+  --gray:#d6d6d6;      --gray-bg:#F0F0F0; /* Gray — 삭제/헤더 */
+  --nude:#E4C9B6;      --nude-bg:#F7EDE4; /* Nude — 1년 경고 */
+  --accent:#8FAF96;
+
+  /* 그레이 스케일 */
+  --g50:#FAFAFA;--g100:#F0F0F0;--g200:#D6D6D6;--g400:var(--g400);--g600:var(--g600);--g800:#000000;
+
+  --white:#ffffff;--r:14px;--r-sm:10px;
   --font:'Noto Sans KR',sans-serif;--mono:'JetBrains Mono',monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -23,33 +29,35 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .hdr{background:var(--white);padding:14px 18px 0;border-bottom:1px solid var(--g100);position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.05)}
 .hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .hdr-btn{font-size:11px;padding:4px 10px;border:1.5px solid var(--g200);border-radius:20px;background:var(--white);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer;white-space:nowrap}
-.logo{font-size:15px;font-weight:900;color:var(--g800)}.logo em{color:var(--accent);font-style:normal}
+.logo{font-size:15px;font-weight:900;color:var(--g800);display:flex;align-items:baseline;gap:6px}
+.logo em{font-style:normal;transition:color .2s}
+.logo-ver{font-size:10px;font-weight:500;color:var(--g400);letter-spacing:.3px}
 .date-pill{font-size:11px;background:var(--g100);color:var(--g600);padding:4px 10px;border-radius:20px;font-weight:500}
 .mode-toggle{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;background:var(--g100);border-radius:11px;padding:3px;gap:3px}
 .tab-wrap{position:sticky;top:var(--hdr-h,0);z-index:49;background:var(--white);padding:8px 14px 10px;border-bottom:1px solid var(--g100)}
 .mode-btn{padding:10px 0;border:none;border-radius:9px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;background:transparent;color:var(--g400)}
-.mode-btn.on-in{background:#B7C96A;color:#fff;box-shadow:0 2px 10px rgba(183,201,106,.35)}
-.mode-btn.on-out{background:#7FB9E6;color:#fff;box-shadow:0 2px 10px rgba(127,185,230,.35)}
-.mode-btn.on-dis{background:#CCCCCC;color:#fff;box-shadow:0 2px 10px rgba(200,200,200,.35)}
-.mode-btn.on-stk{background:#B7C96A;color:#fff;box-shadow:0 2px 10px rgba(183,201,106,.35)}
+.mode-btn.on-in{background:var(--in);color:#000;box-shadow:0 2px 10px rgba(143,175,150,.3)}
+.mode-btn.on-out{background:var(--out);color:#000;box-shadow:0 2px 10px rgba(164,177,186,.3)}
+.mode-btn.on-dis{background:var(--dis);color:#000;box-shadow:0 2px 10px rgba(214,214,214,.3)}
+.mode-btn.on-stk{background:var(--in);color:#000;box-shadow:0 2px 10px rgba(143,175,150,.3)}
 /* 재고 화면 */
 .stk-filter{display:flex;gap:6px;flex-wrap:wrap;padding:0 0 12px}
 
 .stk-filter-btn{padding:5px 12px;border:1.5px solid var(--g200);border-radius:20px;background:var(--white);font-family:var(--font);font-size:12px;font-weight:700;color:var(--g600);cursor:pointer;transition:all .15s}
-.stk-filter-btn.sel{background:#B7C96A;border-color:#B7C96A;color:#fff}
+.stk-filter-btn.sel{background:var(--in);border-color:var(--in);color:#fff}
 .stk-list{display:flex;flex-direction:column;gap:8px}
-.stk-item{background:var(--white);border:1px solid var(--g100);border-radius:var(--r);padding:14px 16px;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.stk-item{background:var(--white);border:1px solid var(--g100);border-radius:var(--r);padding:16px 18px;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.05)}
 .stk-item:active{transform:scale(.98);background:var(--g50)}
 .stk-item-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
 .stk-item-name{font-size:14px;font-weight:700;color:var(--g800)}
 .stk-item-code{font-size:11px;color:var(--g400);font-family:var(--mono)}
 .stk-item-row{font-size:12px;color:var(--g600);margin-top:2px;display:flex;gap:12px;flex-wrap:wrap}
 .stk-item-zone{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--in-bg);color:var(--in)}
-.stk-action-row{display:flex;gap:8px;margin-top:10px}
-.stk-action-btn{flex:1;padding:8px 0;border:none;border-radius:8px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+.stk-action-row{display:flex;gap:10px;margin-top:12px}
+.stk-action-btn{flex:1;padding:16px 0;border:none;border-radius:12px;font-family:var(--font);font-size:16px;font-weight:700;cursor:pointer;transition:all .15s;min-height:56px}
 .stk-action-btn:active{transform:scale(.97)}
-.stk-action-out{background:var(--out-bg);color:var(--out)}
-.stk-action-dis{background:var(--dis-bg);color:var(--dis)}
+.stk-action-out{background:var(--out-bg);color:#000;border:1.5px solid var(--out)}
+.stk-action-dis{background:var(--dis-bg);color:#000;border:1.5px solid var(--dis)}
 .stk-empty{text-align:center;padding:40px 20px;color:var(--g400);font-size:14px}
 /* 연속 등록 버튼 */
 .btn-cont{height:52px;padding:0 20px;border:1.5px solid var(--in);border-radius:var(--r);background:var(--in-bg);color:var(--in);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s}
@@ -70,7 +78,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .dot.in{background:var(--in)}.dot.out{background:var(--out)}.dot.dis{background:var(--dis)}.dot.g{background:var(--g200)}
 .field{margin-bottom:12px}.field:last-child{margin-bottom:0}
 .lbl{display:block;font-size:12px;font-weight:700;color:var(--g600);margin-bottom:5px}
-.req{color:#F98BA9}
+.req{color:var(--dis)}
 .inp,.ta{width:100%;border:1.5px solid var(--g200);border-radius:var(--r-sm);padding:12px 13px;font-family:var(--font);font-size:15px;color:var(--g800);background:var(--g50);transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;outline:none}
 .inp:focus,.ta:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,143,69,.15);background:var(--white)}
 .inp.mono{font-family:var(--mono);font-size:14px}
@@ -97,6 +105,8 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .qty-inp::-webkit-inner-spin-button,.qty-inp::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .qty-inp:focus{border-color:var(--accent);background:var(--white)}
 .qty-hint{margin-top:8px;font-size:11px;color:var(--g400);line-height:1.6}
+.phrase-btn{padding:6px 12px;border:1.5px solid var(--g200);border-radius:20px;background:var(--white);font-family:var(--font);font-size:12px;font-weight:600;color:var(--g600);cursor:pointer;transition:all .12s;white-space:nowrap}
+.phrase-btn:active{background:var(--g100);transform:scale(.96)}
 
 /* 구역 버튼 */
 .zone-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -106,13 +116,13 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .zone-btn.sel small{color:var(--in)}
 
 /* 검색 */
-.search-card{border-radius:var(--r);padding:16px;margin-bottom:10px;border:1.5px solid #E0DED8;background:#FAFAF8}
-.search-card.dis{background:#E8E8E8;border-color:#E0DED8}
+.search-card{border-radius:var(--r);padding:16px;margin-bottom:10px;border:1.5px solid var(--g200);background:var(--g50)}
+.search-card.dis{background:var(--gray-bg);border-color:var(--g200)}
 .search-ttl{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:12px;color:var(--accent)}
 .search-ttl.dis{color:var(--dis)}
 .stabs{display:flex;gap:6px;margin-bottom:12px}
-.stab{flex:1;padding:8px;border:1.5px solid #E0DED8;border-radius:8px;background:var(--white);font-family:var(--font);font-size:13px;font-weight:700;color:var(--accent);cursor:pointer;text-align:center}
-.stab.dis-t{border-color:#E0DED8;color:var(--dis)}
+.stab{flex:1;padding:8px;border:1.5px solid var(--g200);border-radius:8px;background:var(--white);font-family:var(--font);font-size:13px;font-weight:700;color:var(--accent);cursor:pointer;text-align:center}
+.stab.dis-t{border-color:var(--g200);color:var(--dis)}
 .stab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .stab.active.dis-t{background:var(--dis);border-color:var(--dis)}
 .search-results{display:none;background:var(--white);border:1.5px solid var(--g200);border-radius:var(--r-sm);overflow:hidden;margin-top:4px;max-height:200px;overflow-y:auto}
@@ -130,27 +140,27 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .lk{color:var(--g400);flex-shrink:0}.lv{font-weight:600;color:var(--g800);text-align:right;word-break:break-all}
 .lv.mono{font-family:var(--mono);font-size:12px}
 
-/* SUBMIT BAR */
-.submit-bar{display:flex;gap:8px;padding:12px 14px;background:var(--white);border-top:1px solid var(--g100);position:fixed;bottom:0;left:0;right:0;z-index:50}
+/* SUBMIT BAR — 하단 고정, 모바일 최적화 */
+.submit-bar{display:flex;gap:10px;padding:14px 16px;background:var(--white);border-top:1.5px solid var(--g200);position:fixed;bottom:0;left:0;right:0;z-index:50;box-shadow:0 -4px 16px rgba(0,0,0,.08)}
 .btn-reset{width:50px;height:52px;border:1.5px solid var(--g200);border-radius:var(--r);background:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.btn-sub{flex:1;height:52px;border:none;border-radius:var(--r);font-family:var(--font);font-size:16px;font-weight:700;color:#fff;cursor:pointer;transition:all .2s}
-.btn-sub.in-mode{background:#B7C96A;box-shadow:0 3px 14px rgba(183,201,106,.35)}
-.btn-sub.out-mode{background:#7FB9E6;box-shadow:0 3px 14px rgba(127,185,230,.35)}
-.btn-sub.dis-mode{background:#CCCCCC;box-shadow:0 3px 14px rgba(200,200,200,.3)}
+.btn-sub{flex:1;height:64px;border:none;border-radius:var(--r);font-family:var(--font);font-size:18px;font-weight:700;color:#000;cursor:pointer;transition:all .2s}
+.btn-sub.in-mode{background:var(--in);box-shadow:0 3px 14px rgba(143,175,150,.3)}
+.btn-sub.out-mode{background:var(--out);box-shadow:0 3px 14px rgba(164,177,186,.3)}
+.btn-sub.dis-mode{background:var(--dis);box-shadow:0 3px 14px rgba(200,200,200,.3)}
 .btn-sub:active{transform:scale(.97)}.btn-sub:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
 
 /* ✏️ 수정 화면 */
 .edit-screen{display:none;position:fixed;inset:0;background:var(--white);z-index:260;flex-direction:column;overflow:hidden}
 .edit-screen.show{display:flex}
-.edit-hdr{background:#FF8F45;padding:14px 18px 10px;flex-shrink:0}
+.edit-hdr{background:var(--accent);padding:14px 18px 10px;flex-shrink:0}
 .edit-hdr-top{display:flex;align-items:center;justify-content:space-between}
 .edit-hdr-title{color:#fff;font-size:15px;font-weight:900}
 .edit-hdr-code{color:rgba(255,255,255,.75);font-size:11px;font-family:var(--mono);margin-top:3px}
 .edit-close{width:36px;height:36px;border:none;background:rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .edit-body{flex:1;overflow-y:auto;padding:12px 14px 110px;-webkit-overflow-scrolling:touch}
 .edit-submit-bar{display:flex;gap:8px;padding:12px 14px;background:var(--white);border-top:1px solid var(--g100);position:absolute;bottom:0;left:0;right:0;z-index:10}
-.btn-edit-save{flex:1;height:52px;border:none;border-radius:var(--r);font-family:var(--font);font-size:16px;font-weight:700;color:#fff;cursor:pointer;background:#FF8F45;box-shadow:0 3px 14px rgba(184,92,30,.3);transition:all .2s}
+.btn-edit-save{flex:1;height:52px;border:none;border-radius:var(--r);font-family:var(--font);font-size:16px;font-weight:700;color:#fff;cursor:pointer;background:var(--accent);box-shadow:0 3px 14px rgba(184,92,30,.3);transition:all .2s}
 .btn-edit-save:active{transform:scale(.97)}
 .btn-edit-del{width:52px;height:52px;border:1.5px solid var(--out);border-radius:var(--r);background:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
@@ -175,7 +185,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .m-step-txt{font-size:14px;color:var(--g800);line-height:1.55}
 .m-step-txt strong{font-weight:700}
 .m-note{background:var(--g50);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 12px;font-size:13px;color:var(--g600);line-height:1.6;margin-bottom:8px}
-.m-note.warn{border-left-color:var(--out);background:#C8E2F5}
+.m-note.warn{border-left-color:var(--out);background:var(--out-bg)}
 .m-note.tip{border-left-color:#f59e0b;background:#fffbeb}
 .m-chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .m-chip{background:var(--g100);border-radius:6px;padding:5px 10px;font-size:12px;color:var(--g600);font-weight:500}
@@ -261,7 +271,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 <!-- HEADER -->
 <div class="hdr">
   <div class="hdr-top">
-    <div class="logo"><em>회수품</em> 리스트</div>
+    <div class="logo"><em id="logo-em">회수품</em> 리스트<span class="logo-ver">ver.42</span></div>
     <div style="display:flex;align-items:center;gap:6px">
       <button onclick="toggleRelabel()" class="hdr-btn">라벨재출력</button>
       <button onclick="toggleEditBar()" class="hdr-btn">수정</button>
@@ -287,15 +297,15 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 </div>
 
 <!-- 수정 바 -->
-<div id="edit-bar" style="display:none;background:#FAFAF8;border-bottom:2px solid #E0DED8;padding:8px 16px">
+<div id="edit-bar" style="display:none;background:var(--g50);border-bottom:2px solid var(--g200);padding:8px 16px">
   <div style="display:flex;gap:8px;align-items:center">
     <input class="inp mono" id="edit-code-input" type="text" placeholder="수정할 관리번호 (예: 20260507_01)" style="flex:1;font-size:13px;padding:8px 10px">
-    <button onclick="editSearch()" style="padding:8px 14px;border:none;border-radius:8px;background:#FF8F45;color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">조회</button>
+    <button onclick="editSearch()" style="padding:8px 14px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">조회</button>
     <button onclick="toggleEditBar()" style="padding:8px 10px;border:1.5px solid var(--g200);border-radius:8px;background:var(--white);font-size:13px;cursor:pointer">✕</button>
   </div>
 </div>
 <!-- 라벨 재출력 바 -->
-<div id="relabel-bar" style="display:none;background:#FAFAF8;border-bottom:1px solid #E0DED8;padding:8px 16px">
+<div id="relabel-bar" style="display:none;background:var(--g50);border-bottom:1px solid var(--g200);padding:8px 16px">
   <div style="display:flex;gap:8px;align-items:center">
     <input class="inp mono" id="relabel-code" type="text" placeholder="관리번호 입력 (예: 20260507_01)" style="flex:1;font-size:13px;padding:8px 10px">
     <button onclick="relabelSearch()" style="padding:8px 14px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">라벨 출력</button>
@@ -476,7 +486,12 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     </div>
   </div>
   <div class="card">
-    <div class="card-ttl"><span class="dot g"></span>특이사항</div>
+    <div class="card-ttl" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:6px"><span class="dot g"></span>특이사항</span><button type="button" onclick="setNone('out-note')" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">없음</button></div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+      <button type="button" onclick="addPhrase('out-note','인수자 서명 완료')" class="phrase-btn">인수자 서명 완료</button>
+      <button type="button" onclick="addPhrase('out-note','현장 직접 전달')" class="phrase-btn">현장 직접 전달</button>
+      <button type="button" onclick="addPhrase('out-note','파손 주의')" class="phrase-btn">파손 주의</button>
+    </div>
     <textarea class="ta" id="out-note" placeholder="전달 메모, 인수자 등"></textarea>
   </div>
 </div><!-- /form-out -->
@@ -557,7 +572,12 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     </div>
   </div>
   <div class="card">
-    <div class="card-ttl"><span class="dot g"></span>특이사항</div>
+    <div class="card-ttl" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:6px"><span class="dot g"></span>특이사항</span><button type="button" onclick="setNone('dis-note')" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">없음</button></div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+      <button type="button" onclick="addPhrase('dis-note','현장 폐기 처리')" class="phrase-btn">현장 폐기 처리</button>
+      <button type="button" onclick="addPhrase('dis-note','수거 업체 인계')" class="phrase-btn">수거 업체 인계</button>
+      <button type="button" onclick="addPhrase('dis-note','창고 내 처리')" class="phrase-btn">창고 내 처리</button>
+    </div>
     <textarea class="ta" id="dis-note" placeholder="처리 방법, 전달사항 등"></textarea>
   </div>
 </div><!-- /form-dis -->
@@ -676,7 +696,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
       <div style="background:#fff9c4;border:1.5px solid #f59e0b;border-radius:10px;padding:10px 13px;font-size:12px;color:#9A9A9A;line-height:1.6;margin-bottom:8px">
         ⚠️ <strong>회수일은 수정할 수 없어요.</strong><br>날짜 변경이 필요하면 이 항목을 <strong>삭제 후 다시 등록</strong>해주세요.<br><span style="font-size:11px;color:#9A9A9A">(관리번호가 날짜 기반이라 변경 시 연결번호 불일치가 생겨요)</span>
       </div>
-      <div style="background:#FAFAF8;border:1.5px solid #E0DED8;border-radius:10px;padding:10px 13px;font-size:14px;font-weight:700;color:#666666;font-family:'JetBrains Mono',monospace" id="edit-date-display">-</div>
+      <div style="background:var(--g50);border:1.5px solid var(--g200);border-radius:10px;padding:10px 13px;font-size:14px;font-weight:700;color:var(--g600);font-family:'JetBrains Mono',monospace" id="edit-date-display">-</div>
       <input type="hidden" id="edit-date">
     </div>
     <!-- 담당자 -->
@@ -724,7 +744,12 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     </div>
     <!-- 특이사항 -->
     <div class="card">
-      <div class="card-ttl"><span class="dot g"></span>특이사항</div>
+      <div class="card-ttl" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:6px"><span class="dot g"></span>특이사항</span><button type="button" onclick="setNone('edit-note')" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">없음</button></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+        <button type="button" onclick="addPhrase('edit-note','파손 주의')" class="phrase-btn">파손 주의</button>
+        <button type="button" onclick="addPhrase('edit-note','오염 있음')" class="phrase-btn">오염 있음</button>
+        <button type="button" onclick="addPhrase('edit-note','위치 변경됨')" class="phrase-btn">위치 변경됨</button>
+      </div>
       <textarea class="ta" id="edit-note" placeholder="파손 여부, 주의사항 등"></textarea>
     </div>
     <!-- 수정 사유 -->
@@ -920,59 +945,59 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 <div id="delete-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;padding:16px;overflow-y:auto">
   <div style="background:#fff;border-radius:16px;padding:22px 18px;width:100%;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.18);margin:auto">
     <div style="font-size:28px;text-align:center;margin-bottom:10px">🗑</div>
-    <div style="font-size:16px;font-weight:900;color:#1A1A1A;text-align:center;margin-bottom:4px">삭제 방법을 선택해주세요</div>
-    <div style="background:#C8E2F5;border:1.5px solid #4A8FC4;border-radius:10px;padding:8px 14px;margin:12px 0;text-align:center">
-      <div style="font-size:10px;color:#4A8FC4;font-weight:700;margin-bottom:2px">대상 관리번호</div>
-      <div id="del-code-txt" style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#4A8FC4;letter-spacing:1px"></div>
+    <div style="font-size:16px;font-weight:900;color:#000000;text-align:center;margin-bottom:4px">삭제 방법을 선택해주세요</div>
+    <div style="background:var(--out-bg);border:1.5px solid #4A8FC4;border-radius:10px;padding:8px 14px;margin:12px 0;text-align:center">
+      <div style="font-size:10px;color:#000;font-weight:700;margin-bottom:2px">대상 관리번호</div>
+      <div id="del-code-txt" style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#000;letter-spacing:1px"></div>
     </div>
 
     <!-- 케이스 A: 출고/폐기 취소 -->
     <div id="del-case-a" onclick="selectDelCase('a')"
-      style="border:2px solid #E0DED8;border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s">
+      style="border:2px solid var(--g200);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-        <div id="del-radio-a" style="width:16px;height:16px;border-radius:50%;border:2px solid #E0DED8;flex-shrink:0"></div>
-        <div style="font-size:13px;font-weight:800;color:#1A1A1A">출고 / 폐기 기록 취소</div>
+        <div id="del-radio-a" style="width:16px;height:16px;border-radius:50%;border:2px solid var(--g200);flex-shrink:0"></div>
+        <div style="font-size:13px;font-weight:800;color:#000000">출고 / 폐기 기록 취소</div>
       </div>
-      <div style="font-size:12px;color:#666666;padding-left:24px;line-height:1.5">
+      <div style="font-size:12px;color:var(--g600);padding-left:24px;line-height:1.5">
         잘못 등록한 출고·폐기 기록을 <strong>취소</strong>하고<br>재고 수량을 원래대로 <strong>복원</strong>합니다.<br>
-        <span style="color:#FF8F45;font-size:11px">→ 회수품_로그 해당 행 상태: <strong>취소</strong></span>
+        <span style="color:var(--accent);font-size:11px">→ 회수품_로그 해당 행 상태: <strong>취소</strong></span>
       </div>
       <div id="del-a-linked" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid #eee">
-        <label style="font-size:11px;font-weight:700;color:#666666;display:block;margin-bottom:4px">취소할 출고/폐기 관리번호</label>
+        <label style="font-size:11px;font-weight:700;color:var(--g600);display:block;margin-bottom:4px">취소할 출고/폐기 관리번호</label>
         <input id="del-linked-code" type="text" placeholder="예: 20260511_02 (출고·폐기 번호)"
-          style="width:100%;border:1.5px solid #E0DED8;border-radius:8px;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#1A1A1A;outline:none;background:#FAFAF8;box-sizing:border-box">
+          style="width:100%;border:1.5px solid var(--g200);border-radius:8px;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#000000;outline:none;background:var(--g50);box-sizing:border-box">
       </div>
     </div>
 
     <!-- 케이스 B: 잔여 재고 삭제 -->
     <div id="del-case-b" onclick="selectDelCase('b')"
-      style="border:2px solid #E0DED8;border-radius:12px;padding:12px 14px;margin-bottom:12px;cursor:pointer;transition:border-color .15s">
+      style="border:2px solid var(--g200);border-radius:12px;padding:12px 14px;margin-bottom:12px;cursor:pointer;transition:border-color .15s">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-        <div id="del-radio-b" style="width:16px;height:16px;border-radius:50%;border:2px solid #E0DED8;flex-shrink:0"></div>
-        <div style="font-size:13px;font-weight:800;color:#1A1A1A">입고 기록 전체 삭제</div>
+        <div id="del-radio-b" style="width:16px;height:16px;border-radius:50%;border:2px solid var(--g200);flex-shrink:0"></div>
+        <div style="font-size:13px;font-weight:800;color:#000000">입고 기록 전체 삭제</div>
       </div>
-      <div style="font-size:12px;color:#666666;padding-left:24px;line-height:1.5">
+      <div style="font-size:12px;color:var(--g600);padding-left:24px;line-height:1.5">
         입고 자체를 <strong>없던 것으로</strong> 처리합니다.<br>재고에서 제거되고 출고·폐기 이력은 유지돼요.<br>
-        <span style="color:#4A8FC4;font-size:11px">→ 회수품_로그 상태: <strong>삭제</strong> / 재고 제거</span>
+        <span style="color:#000;font-size:11px">→ 회수품_로그 상태: <strong>삭제</strong> / 재고 제거</span>
       </div>
     </div>
 
     <!-- 담당자 입력 -->
     <div style="margin-bottom:8px">
-      <label style="display:block;font-size:12px;font-weight:700;color:#666666;margin-bottom:5px">삭제/취소 사유 <span style="color:#4A8FC4">*</span></label>
+      <label style="display:block;font-size:12px;font-weight:700;color:var(--g600);margin-bottom:5px">삭제/취소 사유 <span style="color:#000">*</span></label>
       <input id="del-reason-inp" type="text" placeholder="예: 오기입, 테스트 데이터 등"
-        style="width:100%;border:1.5px solid #E0DED8;border-radius:10px;padding:10px 12px;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:#1A1A1A;outline:none;background:#FAFAF8;box-sizing:border-box"
-        oninput="this.style.borderColor=this.value.trim()?'var(--in)':'#E0DED8'">
+        style="width:100%;border:1.5px solid var(--g200);border-radius:10px;padding:10px 12px;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:#000000;outline:none;background:var(--g50);box-sizing:border-box"
+        oninput="this.style.borderColor=this.value.trim()?'var(--in)':'var(--g200)'">
     </div>
     <div style="margin-bottom:12px">
-      <label style="display:block;font-size:12px;font-weight:700;color:#666666;margin-bottom:5px">처리 담당자 <span style="color:#4A8FC4">*</span></label>
+      <label style="display:block;font-size:12px;font-weight:700;color:var(--g600);margin-bottom:5px">처리 담당자 <span style="color:#000">*</span></label>
       <input id="del-worker-inp" type="text" placeholder="예: 최류정 대리"
-        style="width:100%;border:1.5px solid #E0DED8;border-radius:10px;padding:10px 12px;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:#1A1A1A;outline:none;background:#FAFAF8;box-sizing:border-box"
-        oninput="this.style.borderColor=this.value.trim()?'var(--in)':'#E0DED8'">
+        style="width:100%;border:1.5px solid var(--g200);border-radius:10px;padding:10px 12px;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:#000000;outline:none;background:var(--g50);box-sizing:border-box"
+        oninput="this.style.borderColor=this.value.trim()?'var(--in)':'var(--g200)'">
     </div>
 
     <div style="display:flex;gap:8px">
-      <button onclick="closeDeleteModal()" style="flex:1;height:46px;border:1.5px solid #E0DED8;border-radius:12px;background:#fff;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;color:#666666;cursor:pointer">취소</button>
+      <button onclick="closeDeleteModal()" style="flex:1;height:46px;border:1.5px solid var(--g200);border-radius:12px;background:#fff;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;color:var(--g600);cursor:pointer">취소</button>
       <button onclick="confirmDelete()" style="flex:1;height:46px;border:none;border-radius:12px;background:#4A8FC4;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer">처리</button>
     </div>
   </div>
@@ -1135,7 +1160,20 @@ function setMode(m) {
     document.getElementById('btn-'+x).className = 'mode-btn' + (m===x ? ` on-${x}` : '');
     document.getElementById('form-'+x).style.display = m===x ? 'block' : 'none';
   });
-  // submit bar: 재고 탭에선 숨김, 입고 탭에서만 연속등록 표시
+
+  // 로고 em 색상 — 탭별 메인 컬러 연동
+  const logoEm = document.getElementById('logo-em');
+  if (logoEm) {
+    const colorMap = {
+      in:  'var(--in)',
+      out: 'var(--out)',
+      dis: 'var(--dis)',
+      stk: 'var(--in)',
+    };
+    logoEm.style.color = colorMap[m] || 'var(--in)';
+  }
+
+  // submit bar
   const sub = document.getElementById('btn-sub');
   const submitBar = document.querySelector('.submit-bar');
   const contBtn = document.getElementById('btn-cont');
@@ -1264,30 +1302,42 @@ function validate() {
     return true;
   };
   if (mode === 'in') {
-    return req('in-store','회수 매장을 입력해주세요') &&
-           req('in-category','집기 종류를 입력해주세요') &&
-           req('in-date','회수일을 입력해주세요') &&
-           req('in-worker','회수 담당자를 입력해주세요') &&
-           req('in-requester','회수 요청자를 입력해주세요') &&
-           req('in-spec','사양을 입력해주세요') &&
-           req('in-size','사이즈를 입력해주세요') &&
-           req('in-parts','구성품을 입력해주세요') &&
-           (() => { if(!document.getElementById('in-zone').value){showT('적재 위치를 선택해주세요','err');return false;} return true; })() &&
-           req('in-note','특이사항을 입력해주세요');
+    return req('in-store','⚠️ 회수 매장을 입력해주세요') &&
+           req('in-category','⚠️ 집기 종류를 입력해주세요') &&
+           req('in-date','⚠️ 회수일을 입력해주세요') &&
+           req('in-worker','⚠️ 회수 담당자를 입력해주세요') &&
+           req('in-requester','⚠️ 회수 요청자를 입력해주세요') &&
+           req('in-spec','⚠️ 사양을 입력해주세요') &&
+           req('in-size','⚠️ 사이즈를 입력해주세요') &&
+           req('in-parts','⚠️ 구성품을 입력해주세요') &&
+           (() => { if(!document.getElementById('in-zone').value){showT('⚠️ 적재 위치를 선택해주세요','err');return false;} return true; })() &&
+           req('in-note','⚠️ 특이사항을 입력해주세요 (없으면 "없음" 버튼 클릭)');
   }
   if (mode === 'out') {
-    if (!linked) { showT('출고할 품목을 연결해주세요','err'); return false; }
-    return req('out-dest','출고지를 입력해주세요') &&
-           req('out-date','출고일을 입력해주세요') &&
-           req('out-worker','출고 담당자를 입력해주세요') &&
-           req('out-requester','출고 요청자를 입력해주세요');
+    // 연결번호 없으면 저장 방지
+    if (!linked || !linked.code) { showT('⚠️ 출고할 품목을 먼저 연결해주세요 (재고탭에서 선택)','err'); return false; }
+    // 수량 초과 검사
+    const outQty = parseInt(document.getElementById('out-qty')?.value) || 1;
+    const stockQty = parseInt(linked.qty) || 0;
+    if (outQty <= 0) { showT('⚠️ 출고 수량은 1 이상이어야 해요','err'); return false; }
+    if (outQty > stockQty) { showT(`⚠️ 출고 수량(${outQty})이 보유 수량(${stockQty})을 초과해요`,'err'); return false; }
+    return req('out-dest','⚠️ 출고지를 입력해주세요') &&
+           req('out-date','⚠️ 출고일을 입력해주세요') &&
+           req('out-worker','⚠️ 출고 담당자를 입력해주세요') &&
+           req('out-requester','⚠️ 출고 요청자를 입력해주세요');
   }
   if (mode === 'dis') {
-    if (!linked) { showT('폐기할 품목을 연결해주세요','err'); return false; }
-    if (!document.getElementById('dis-reason').value) { showT('폐기 사유를 선택해주세요','err'); return false; }
-    return req('dis-date','폐기일을 입력해주세요') &&
-           req('dis-worker','폐기 담당자를 입력해주세요') &&
-           req('dis-requester','폐기 요청자를 입력해주세요');
+    // 연결번호 없으면 저장 방지
+    if (!linked || !linked.code) { showT('⚠️ 폐기할 품목을 먼저 연결해주세요 (재고탭에서 선택)','err'); return false; }
+    // 수량 초과 검사
+    const disQty = parseInt(document.getElementById('dis-qty')?.value) || 1;
+    const stockQty2 = parseInt(linked.qty) || 0;
+    if (disQty <= 0) { showT('⚠️ 폐기 수량은 1 이상이어야 해요','err'); return false; }
+    if (disQty > stockQty2) { showT(`⚠️ 폐기 수량(${disQty})이 보유 수량(${stockQty2})을 초과해요`,'err'); return false; }
+    if (!document.getElementById('dis-reason').value) { showT('⚠️ 폐기 사유를 선택해주세요','err'); return false; }
+    return req('dis-date','⚠️ 폐기일을 입력해주세요') &&
+           req('dis-worker','⚠️ 폐기 담당자를 입력해주세요') &&
+           req('dis-requester','⚠️ 폐기 요청자를 입력해주세요');
   }
   return true;
 }
@@ -1688,6 +1738,14 @@ function setNone(id) {
   }, { once: true });
 }
 
+function addPhrase(id, phrase) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const cur = el.value.trim();
+  el.value = (!cur || cur === '-') ? phrase : cur + ' / ' + phrase;
+  el.style.color = ''; el.style.fontStyle = '';
+}
+
 // ── ✏️ 수정 바 토글 ────────────────────────────────────────────
 function toggleEditBar() {
   const bar = document.getElementById('edit-bar');
@@ -1800,9 +1858,9 @@ async function deleteItem() {
 function showDeleteConfirm(code) {
   document.getElementById('del-code-txt').textContent = code;
   document.getElementById('del-reason-inp').value = '';
-  document.getElementById('del-reason-inp').style.borderColor = '#E0DED8';
+  document.getElementById('del-reason-inp').style.borderColor = 'var(--g200)';
   const inp = document.getElementById('del-worker-inp');
-  inp.value = ''; inp.style.borderColor = '#E0DED8';
+  inp.value = ''; inp.style.borderColor = 'var(--g200)';
   // 케이스 초기화
   selectDelCase(null);
   document.getElementById('del-linked-code').value = '';
@@ -1812,15 +1870,15 @@ function showDeleteConfirm(code) {
 
 function selectDelCase(c) {
   window._delCase = c;
-  const colors = { a: '#FF8F45', b: '#4A8FC4' };
+  const colors = { a: 'var(--accent)', b: '#4A8FC4' };
   ['a','b'].forEach(x => {
     const box   = document.getElementById(`del-case-${x}`);
     const radio = document.getElementById(`del-radio-${x}`);
     const active = c === x;
-    box.style.borderColor   = active ? colors[x] : '#E0DED8';
-    box.style.background    = active ? (x==='a' ? '#E8F0C8' : '#C8E2F5') : '#fff';
+    box.style.borderColor   = active ? colors[x] : 'var(--g200)';
+    box.style.background    = active ? (x==='a' ? 'var(--in-bg)' : 'var(--out-bg)') : '#fff';
     radio.style.background  = active ? colors[x] : '#fff';
-    radio.style.borderColor = active ? colors[x] : '#E0DED8';
+    radio.style.borderColor = active ? colors[x] : 'var(--g200)';
   });
   // A 선택 시 연결번호 입력 표시
   document.getElementById('del-a-linked').style.display = c === 'a' ? 'block' : 'none';
@@ -1948,18 +2006,32 @@ function renderStk() {
 function stkGoOut(item) {
   setMode('out');
   setTimeout(() => {
+    // linkIt으로 연결 처리 (linked 세팅 + preview 표시)
     linkIt('out', item);
-    // 수량 힌트도 out-code 입력 스타일 맞춤
+
+    // out-code 스타일
     const codeEl = document.getElementById('out-code');
     if (codeEl) {
       codeEl.value = item.code;
-      codeEl.style.borderColor = 'var(--out)';
-      codeEl.style.background  = 'var(--out-bg)';
+      codeEl.style.borderColor = '#7A96A8';
+      codeEl.style.background  = '#C4D4DE';
       codeEl.style.fontWeight  = '700';
     }
-    // 연결된 preview 영역으로 부드럽게 스크롤
-    const preview = document.getElementById('out-preview');
-    if (preview) preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // 수량 자동 세팅
+    const qtyEl = document.getElementById('out-qty');
+    if (qtyEl) qtyEl.value = item.qty || '1';
+
+    // 힌트 표시
+    const hint = document.getElementById('out-qty-hint');
+    if (hint) {
+      hint.style.display = 'block';
+      hint.innerHTML = `📦 보유 수량: <strong>${item.qty}개</strong> (${item.zone || '-'}) — 일부만 출고 가능`;
+    }
+
+    // 화면 상단으로 스크롤
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showT(`✅ ${item.name} (${item.code}) 출고 연결 완료`, 'ok');
   }, 250);
 }
 
@@ -1967,15 +2039,20 @@ function stkGoDis(item) {
   setMode('dis');
   setTimeout(() => {
     linkIt('dis', item);
+
     const codeEl = document.getElementById('dis-code');
     if (codeEl) {
       codeEl.value = item.code;
-      codeEl.style.borderColor = 'var(--dis)';
-      codeEl.style.background  = 'var(--dis-bg)';
+      codeEl.style.borderColor = '#B07A74';
+      codeEl.style.background  = '#E8C8C4';
       codeEl.style.fontWeight  = '700';
     }
-    const preview = document.getElementById('dis-preview');
-    if (preview) preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    const qtyEl = document.getElementById('dis-qty');
+    if (qtyEl) qtyEl.value = item.qty || '1';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showT(`✅ ${item.name} (${item.code}) 폐기 연결 완료`, 'ok');
   }, 250);
 }
 
@@ -2039,6 +2116,7 @@ window.deleteItem = deleteItem;
 window.closeEdit = closeEdit;
 window.selEditZone = selEditZone;
 window.setNone = setNone;
+window.addPhrase = addPhrase;
 window.loadStock = loadStock;
 window.filterStk = filterStk;
 window.stkGoOut = stkGoOut;
@@ -2049,11 +2127,6 @@ window.closeDeleteModal = closeDeleteModal;
 window.confirmDelete = confirmDelete;
 window.selectDelCase = selectDelCase;
 </script>
-<!-- 버전 뱃지 -->
-<div id="ver-badge" style="position:fixed;bottom:14px;right:14px;z-index:999;background:rgba(30,35,48,.72);backdrop-filter:blur(6px);border-radius:20px;padding:5px 11px;display:flex;align-items:center;gap:5px;cursor:default;user-select:none" title="수정 이력">
-  <span style="font-size:10px;color:rgba(255,255,255,.5);font-family:'JetBrains Mono',monospace;letter-spacing:.5px">ver.</span>
-  <span style="font-size:11px;font-weight:700;color:#fff;font-family:'JetBrains Mono',monospace;letter-spacing:.5px">41</span>
-</div>
 
 </body>
 </html>
