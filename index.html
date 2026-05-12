@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>1호 창고 집기 관리</title>
+<title>회수품 리스트</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@600&display=swap');
 :root {
@@ -514,6 +514,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     <div style="display:flex;flex-wrap:wrap;gap:6px">
       <button class="zone-btn" style="font-size:13px;padding:12px 8px" onclick="selReason('파손',this)">파손</button>
       <button class="zone-btn" style="font-size:13px;padding:12px 8px" onclick="selReason('노후/수명',this)">노후/수명</button>
+      <button class="zone-btn" style="font-size:13px;padding:12px 8px" onclick="selReason('오염',this)">오염</button>
       <button class="zone-btn" style="font-size:13px;padding:12px 8px" onclick="selReason('분실',this)">분실</button>
       <button class="zone-btn" style="font-size:13px;padding:12px 8px" onclick="selReason('불량',this)">불량</button>
       <button class="zone-btn" style="font-size:13px;padding:12px 8px" onclick="selReason('기타',this)">기타</button>
@@ -669,30 +670,14 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
       <div class="card-ttl"><span class="dot in"></span>회수 매장 <span class="req">*</span></div>
       <input class="inp" id="edit-store" type="text" placeholder="예: 갤러리 00점, 맨션 00점" autocomplete="off">
     </div>
-    <!-- 회수일 -->
+    <!-- 회수일 (수정 불가) -->
     <div class="card">
-      <div class="card-ttl"><span class="dot in"></span>회수일 <span class="req">*</span></div>
-      <div class="date-row">
-        <div class="date-wheel" id="edit-date-wheel">
-          <div class="date-unit">
-            <button class="date-step" type="button" onclick="stepDatePart('edit-date','yy',1)">▲</button>
-            <input class="date-part" id="edit-date-yy" placeholder="YY" maxlength="2" readonly>
-            <button class="date-step" type="button" onclick="stepDatePart('edit-date','yy',-1)">▼</button>
-          </div>
-          <div class="date-unit">
-            <button class="date-step" type="button" onclick="stepDatePart('edit-date','mm',1)">▲</button>
-            <input class="date-part" id="edit-date-mm" placeholder="MM" maxlength="2" readonly>
-            <button class="date-step" type="button" onclick="stepDatePart('edit-date','mm',-1)">▼</button>
-          </div>
-          <div class="date-unit">
-            <button class="date-step" type="button" onclick="stepDatePart('edit-date','dd',1)">▲</button>
-            <input class="date-part" id="edit-date-dd" placeholder="DD" maxlength="2" readonly>
-            <button class="date-step" type="button" onclick="stepDatePart('edit-date','dd',-1)">▼</button>
-          </div>
-        </div>
-        <input type="hidden" id="edit-date">
-        <button class="btn-today" onclick="setToday('edit-date')">오늘</button>
+      <div class="card-ttl"><span class="dot in"></span>회수일</div>
+      <div style="background:#fff9c4;border:1.5px solid #f59e0b;border-radius:10px;padding:10px 13px;font-size:12px;color:#7c5a1e;line-height:1.6;margin-bottom:8px">
+        ⚠️ <strong>회수일은 수정할 수 없어요.</strong><br>날짜 변경이 필요하면 이 항목을 <strong>삭제 후 다시 등록</strong>해주세요.<br><span style="font-size:11px;color:#9a7030">(관리번호가 날짜 기반이라 변경 시 연결번호 불일치가 생겨요)</span>
       </div>
+      <div style="background:#f7f8fa;border:1.5px solid #dde0e6;border-radius:10px;padding:10px 13px;font-size:14px;font-weight:700;color:#5a6475;font-family:'JetBrains Mono',monospace" id="edit-date-display">-</div>
+      <input type="hidden" id="edit-date">
     </div>
     <!-- 담당자 -->
     <div class="card">
@@ -741,6 +726,11 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     <div class="card">
       <div class="card-ttl"><span class="dot g"></span>특이사항</div>
       <textarea class="ta" id="edit-note" placeholder="파손 여부, 주의사항 등"></textarea>
+    </div>
+    <!-- 수정 사유 -->
+    <div class="card">
+      <div class="card-ttl"><span class="dot g"></span>수정 사유 <span class="req">*</span></div>
+      <input class="inp" id="edit-reason" type="text" placeholder="예: 사양 오기입, 위치 변경 등" autocomplete="off">
     </div>
     <!-- 수정 담당자 -->
     <div class="card">
@@ -945,7 +935,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
       </div>
       <div style="font-size:12px;color:#5a6475;padding-left:24px;line-height:1.5">
         잘못 등록한 출고·폐기 기록을 <strong>취소</strong>하고<br>재고 수량을 원래대로 <strong>복원</strong>합니다.<br>
-        <span style="color:#1A4F8A;font-size:11px">→ 입출고_로그 해당 행 상태: <strong>취소</strong></span>
+        <span style="color:#1A4F8A;font-size:11px">→ 회수품_로그 해당 행 상태: <strong>취소</strong></span>
       </div>
       <div id="del-a-linked" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid #eee">
         <label style="font-size:11px;font-weight:700;color:#5a6475;display:block;margin-bottom:4px">취소할 출고/폐기 관리번호</label>
@@ -963,11 +953,17 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
       </div>
       <div style="font-size:12px;color:#5a6475;padding-left:24px;line-height:1.5">
         입고 자체를 <strong>없던 것으로</strong> 처리합니다.<br>재고에서 제거되고 출고·폐기 이력은 유지돼요.<br>
-        <span style="color:#c0392b;font-size:11px">→ 입출고_로그 상태: <strong>삭제</strong> / 재고 제거</span>
+        <span style="color:#c0392b;font-size:11px">→ 회수품_로그 상태: <strong>삭제</strong> / 재고 제거</span>
       </div>
     </div>
 
     <!-- 담당자 입력 -->
+    <div style="margin-bottom:8px">
+      <label style="display:block;font-size:12px;font-weight:700;color:#5a6475;margin-bottom:5px">삭제/취소 사유 <span style="color:#c0392b">*</span></label>
+      <input id="del-reason-inp" type="text" placeholder="예: 오기입, 테스트 데이터 등"
+        style="width:100%;border:1.5px solid #dde0e6;border-radius:10px;padding:10px 12px;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:#1e2330;outline:none;background:#f7f8fa;box-sizing:border-box"
+        oninput="this.style.borderColor=this.value.trim()?'var(--in)':'#dde0e6'">
+    </div>
     <div style="margin-bottom:12px">
       <label style="display:block;font-size:12px;font-weight:700;color:#5a6475;margin-bottom:5px">처리 담당자 <span style="color:#c0392b">*</span></label>
       <input id="del-worker-inp" type="text" placeholder="예: 최류정 대리"
@@ -1727,11 +1723,13 @@ function openEditScreen(item) {
   document.getElementById('edit-size').value     = item.size   || '';
   document.getElementById('edit-parts').value    = item.parts  || '';
   document.getElementById('edit-zone').value     = item.zone   || '';
-  document.getElementById('edit-note').value     = item.note   || '';  // 특이사항
-  document.getElementById('edit-modifier').value = '';                  // 수정 담당자는 매번 입력
+  document.getElementById('edit-note').value     = item.note   || '';
+  document.getElementById('edit-modifier').value = '';
+  document.getElementById('edit-reason').value   = '';
 
-  // 회수일 세팅
-  if (item.date) setDateParts('edit-date', item.date);
+  document.getElementById('edit-date').value     = item.date   || '';
+  const disp = document.getElementById('edit-date-display');
+  if (disp) disp.textContent = item.date || '-';
 
   // 구역 버튼 선택 표시
   document.querySelectorAll('#edit-screen .zone-btn').forEach(b => b.classList.remove('sel'));
@@ -1759,6 +1757,7 @@ async function saveEdit() {
   if (!category) { showT('집기 종류를 입력해주세요', 'err'); return; }
   if (!store)    { showT('회수 매장을 입력해주세요', 'err'); return; }
   if (!worker)   { showT('회수 담당자를 입력해주세요', 'err'); return; }
+  if (!document.getElementById('edit-reason').value.trim()) { showT('수정 사유를 입력해주세요', 'err'); return; }
   if (!modifier) { showT('수정 담당자를 입력해주세요', 'err'); return; }
 
   const p = {
@@ -1766,15 +1765,15 @@ async function saveEdit() {
     code,
     category,
     store,
-    date:     document.getElementById('edit-date').value.trim(),
     worker,
-    modifier,   // 수정 담당자 → Apps Script에서 특이사항에 "[수정:이름 일시]" 형태로 기록
+    modifier,
     qty:      document.getElementById('edit-qty').value,
     spec:     document.getElementById('edit-spec').value.trim(),
     size:     document.getElementById('edit-size').value.trim(),
     parts:    document.getElementById('edit-parts').value.trim(),
     zone:     document.getElementById('edit-zone').value,
     note:     document.getElementById('edit-note').value.trim(),
+    reason:   document.getElementById('edit-reason').value.trim(),
   };
 
   document.getElementById('loading').classList.add('show');
@@ -1800,6 +1799,8 @@ async function deleteItem() {
 
 function showDeleteConfirm(code) {
   document.getElementById('del-code-txt').textContent = code;
+  document.getElementById('del-reason-inp').value = '';
+  document.getElementById('del-reason-inp').style.borderColor = '#dde0e6';
   const inp = document.getElementById('del-worker-inp');
   inp.value = ''; inp.style.borderColor = '#dde0e6';
   // 케이스 초기화
@@ -1837,6 +1838,12 @@ async function confirmDelete() {
 
   // 유효성
   if (!delCase) { showT('삭제 방법을 선택해주세요', 'err'); return; }
+  const reason = document.getElementById('del-reason-inp').value.trim();
+  if (!reason) {
+    const ri = document.getElementById('del-reason-inp');
+    ri.style.borderColor = '#c0392b'; ri.focus();
+    showT('삭제/취소 사유를 입력해주세요', 'err'); return;
+  }
   const worker = document.getElementById('del-worker-inp').value.trim();
   if (!worker) {
     const inp = document.getElementById('del-worker-inp');
@@ -1853,10 +1860,10 @@ async function confirmDelete() {
       inp.style.borderColor = '#c0392b'; inp.focus();
       showT('취소할 출고/폐기 관리번호를 입력해주세요', 'err'); return;
     }
-    params = new URLSearchParams({ action: 'cancelOutDis', code, linkedCode, worker });
+    params = new URLSearchParams({ action: 'cancelOutDis', code, linkedCode, worker, reason });
   } else {
     // 케이스 B: 입고 전체 삭제
-    params = new URLSearchParams({ action: 'delete', code, worker });
+    params = new URLSearchParams({ action: 'delete', code, worker, reason });
   }
 
   closeDeleteModal();
@@ -1941,7 +1948,8 @@ function renderStk() {
 function stkGoOut(item) {
   setMode('out');
   setTimeout(() => {
-    linked = item;
+    linkIt('out', item);
+    // 수량 힌트도 out-code 입력 스타일 맞춤
     const codeEl = document.getElementById('out-code');
     if (codeEl) {
       codeEl.value = item.code;
@@ -1949,19 +1957,16 @@ function stkGoOut(item) {
       codeEl.style.background  = 'var(--out-bg)';
       codeEl.style.fontWeight  = '700';
     }
-    // 수량 자동 세팅
-    const qtyEl = document.getElementById('out-qty');
-    if (qtyEl) qtyEl.value = item.qty || '1';
-    // 연결 미리보기 표시
-    linkIt('out', item);
-    window.scrollTo(0, 0);
-  }, 150);
+    // 연결된 preview 영역으로 부드럽게 스크롤
+    const preview = document.getElementById('out-preview');
+    if (preview) preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 250);
 }
 
 function stkGoDis(item) {
   setMode('dis');
   setTimeout(() => {
-    linked = item;
+    linkIt('dis', item);
     const codeEl = document.getElementById('dis-code');
     if (codeEl) {
       codeEl.value = item.code;
@@ -1969,13 +1974,9 @@ function stkGoDis(item) {
       codeEl.style.background  = 'var(--dis-bg)';
       codeEl.style.fontWeight  = '700';
     }
-    // 수량 자동 세팅
-    const qtyEl = document.getElementById('dis-qty');
-    if (qtyEl) qtyEl.value = item.qty || '1';
-    // 연결 미리보기 표시
-    linkIt('dis', item);
-    window.scrollTo(0, 0);
-  }, 150);
+    const preview = document.getElementById('dis-preview');
+    if (preview) preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 250);
 }
 
 // ── 📦 연속 등록 ────────────────────────────────────────────────
@@ -2048,5 +2049,11 @@ window.closeDeleteModal = closeDeleteModal;
 window.confirmDelete = confirmDelete;
 window.selectDelCase = selectDelCase;
 </script>
+<!-- 버전 뱃지 -->
+<div id="ver-badge" style="position:fixed;bottom:14px;right:14px;z-index:999;background:rgba(30,35,48,.72);backdrop-filter:blur(6px);border-radius:20px;padding:5px 11px;display:flex;align-items:center;gap:5px;cursor:default;user-select:none" title="수정 이력">
+  <span style="font-size:10px;color:rgba(255,255,255,.5);font-family:'JetBrains Mono',monospace;letter-spacing:.5px">ver.</span>
+  <span style="font-size:11px;font-weight:700;color:#fff;font-family:'JetBrains Mono',monospace;letter-spacing:.5px">40</span>
+</div>
+
 </body>
 </html>
