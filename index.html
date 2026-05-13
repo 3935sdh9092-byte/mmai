@@ -53,8 +53,8 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .stk-item-code{font-size:11px;color:var(--g400);font-family:var(--mono)}
 .stk-item-row{font-size:12px;color:var(--g600);margin-top:2px;display:flex;gap:12px;flex-wrap:wrap}
 .stk-item-zone{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--in-bg);color:var(--in)}
-.stk-action-row{display:flex;gap:10px;margin-top:12px}
-.stk-action-btn{flex:1;padding:16px 0;border:none;border-radius:12px;font-family:var(--font);font-size:16px;font-weight:700;cursor:pointer;transition:all .15s;min-height:56px}
+.stk-action-row{display:flex;gap:6px;margin-top:10px}
+.stk-action-btn{flex:1;padding:10px 0;border:none;border-radius:9px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;min-height:auto}
 .stk-action-btn:active{transform:scale(.97)}
 .stk-action-out{background:var(--out-bg);color:#000;border:1.5px solid var(--out)}
 .stk-action-dis{background:var(--dis-bg);color:#000;border:1.5px solid var(--dis)}
@@ -112,16 +112,16 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .zone-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .zone-btn{padding:16px 6px;border:2px solid var(--g200);border-radius:10px;background:var(--white);font-family:var(--font);font-size:20px;font-weight:900;color:var(--g400);cursor:pointer;transition:all .15s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px}
 .zone-btn small{font-size:9px;font-weight:500}
-.zone-btn.sel{border-color:var(--in);background:var(--in-bg);color:var(--in)}
-.zone-btn.sel small{color:var(--in)}
+.zone-btn.sel{border-color:var(--dis);background:var(--dis-bg);color:#000}
+.zone-btn.sel small{color:#000}
 
 /* 검색 */
 .search-card{border-radius:var(--r);padding:16px;margin-bottom:10px;border:1.5px solid var(--g200);background:var(--g50)}
 .search-card.dis{background:var(--gray-bg);border-color:var(--g200)}
 .search-ttl{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:12px;color:var(--accent)}
 .search-ttl.dis{color:var(--dis)}
-.stabs{display:flex;gap:6px;margin-bottom:12px}
-.stab{flex:1;padding:8px;border:1.5px solid var(--g200);border-radius:8px;background:var(--white);font-family:var(--font);font-size:13px;font-weight:700;color:var(--accent);cursor:pointer;text-align:center}
+.stabs{display:flex;gap:4px;margin-bottom:10px}
+.stab{flex:1;padding:5px 6px;border:1.5px solid var(--g200);border-radius:6px;background:var(--white);font-family:var(--font);font-size:11px;font-weight:700;color:var(--g600);cursor:pointer;text-align:center}
 .stab.dis-t{border-color:var(--g200);color:var(--dis)}
 .stab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .stab.active.dis-t{background:var(--dis);border-color:var(--dis)}
@@ -230,7 +230,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .sv.in{color:var(--in)}.sv.out{color:var(--out)}.sv.dis{color:var(--dis)}
 .done-btns{display:flex;flex-direction:column;gap:8px;width:100%}
 .btn-label{height:50px;border:none;border-radius:var(--r);font-family:var(--font);font-size:15px;font-weight:700;color:#fff;background:var(--accent);cursor:pointer}
-.btn-next{height:50px;border:none;border-radius:var(--r);font-family:var(--font);font-size:15px;font-weight:700;color:#fff;background:var(--g600);cursor:pointer}
+.btn-next{height:50px;border:1.5px solid var(--g200);border-radius:var(--r);font-family:var(--font);font-size:15px;font-weight:700;color:var(--g800);background:var(--g50);cursor:pointer}
 .btn-sheet{height:44px;border:1.5px solid var(--g200);border-radius:var(--r);font-family:var(--font);font-size:14px;color:var(--g600);background:var(--white);cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px}
 
 /* 라벨 화면 */
@@ -271,12 +271,11 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 <!-- HEADER -->
 <div class="hdr">
   <div class="hdr-top">
-    <div class="logo"><em id="logo-em">회수품</em> 리스트<span class="logo-ver">ver.42</span></div>
+    <div class="logo"><em id="logo-em">회수품</em> 리스트<span class="logo-ver">ver.43</span></div>
     <div style="display:flex;align-items:center;gap:6px">
       <button onclick="toggleRelabel()" class="hdr-btn">라벨재출력</button>
       <button onclick="toggleEditBar()" class="hdr-btn">수정</button>
       <button onclick="showManual()" class="hdr-btn">매뉴얼</button>
-      <div class="date-pill" id="date-pill"></div>
     </div>
   </div>
   <!-- 용량 게이지 -->
@@ -383,7 +382,11 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
   <div class="card">
     <div class="card-ttl"><span class="dot in"></span>상세 정보</div>
     <div class="field">
-      <label class="lbl">사양 <span class="req">*</span></label>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+        <label class="lbl" style="margin-bottom:0">사양 <span class="req">*</span></label>
+        <button type="button" onclick="loadTopSpecs()" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">자주 쓴 사양 ▾</button>
+      </div>
+      <div id="top-specs-wrap" style="display:none;flex-wrap:wrap;gap:5px;margin-bottom:8px"></div>
       <textarea class="ta" id="in-spec" rows="4" style="min-height:90px" placeholder="예: SWAN / RQ309 / PINK, 삼성, 제조년월, 모델코드, S/N, 화이트 안정기O, 블랙 안정기X, 이불걸이 화이트, 베개받침대 아연, 2구 콘센트, 롤카펫"></textarea>
     </div>
     <div class="field">
@@ -487,11 +490,6 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
   </div>
   <div class="card">
     <div class="card-ttl" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:6px"><span class="dot g"></span>특이사항</span><button type="button" onclick="setNone('out-note')" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">없음</button></div>
-    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
-      <button type="button" onclick="addPhrase('out-note','인수자 서명 완료')" class="phrase-btn">인수자 서명 완료</button>
-      <button type="button" onclick="addPhrase('out-note','현장 직접 전달')" class="phrase-btn">현장 직접 전달</button>
-      <button type="button" onclick="addPhrase('out-note','파손 주의')" class="phrase-btn">파손 주의</button>
-    </div>
     <textarea class="ta" id="out-note" placeholder="전달 메모, 인수자 등"></textarea>
   </div>
 </div><!-- /form-out -->
@@ -745,11 +743,6 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     <!-- 특이사항 -->
     <div class="card">
       <div class="card-ttl" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:6px"><span class="dot g"></span>특이사항</span><button type="button" onclick="setNone('edit-note')" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">없음</button></div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
-        <button type="button" onclick="addPhrase('edit-note','파손 주의')" class="phrase-btn">파손 주의</button>
-        <button type="button" onclick="addPhrase('edit-note','오염 있음')" class="phrase-btn">오염 있음</button>
-        <button type="button" onclick="addPhrase('edit-note','위치 변경됨')" class="phrase-btn">위치 변경됨</button>
-      </div>
       <textarea class="ta" id="edit-note" placeholder="파손 여부, 주의사항 등"></textarea>
     </div>
     <!-- 수정 사유 -->
@@ -1268,9 +1261,9 @@ function linkIt(form, item) {
   const codeInput = document.getElementById(form+'-code');
   if (codeInput) {
     codeInput.value = item.code;
-    codeInput.style.borderColor = 'var(--in)';
-    codeInput.style.boxShadow = '0 0 0 3px var(--in-glow)';
-    codeInput.style.background = 'var(--in-bg)';
+    codeInput.style.borderColor = form==='out' ? 'var(--out)' : 'var(--dis)';
+    codeInput.style.boxShadow = form==='out' ? '0 0 0 3px var(--out-glow)' : '0 0 0 3px var(--dis-glow)';
+    codeInput.style.background = form==='out' ? 'var(--out-bg)' : 'var(--dis-bg)';
     codeInput.style.fontWeight = '700';
   }
   // 연결 완료 토스트
@@ -1464,7 +1457,7 @@ function showDone(d) {
     `<div class="sum-row"><span class="sk">${k}</span>${v}</div>`).join('');
 
   document.getElementById('sheet-link').href = SHEET_URL;
-  document.getElementById('btn-label').style.display = d.mode==='입고' ? 'block' : 'none';
+  document.getElementById('btn-label').style.display = 'block';
   window._lastDone = d;
   document.getElementById('done-screen').classList.add('show');
 }
@@ -1671,8 +1664,8 @@ async function searchByDate(form) {
       return;
     }
     // 결과 있음 - 초록 테두리
-    codeInput.style.borderColor = 'var(--in)';
-    codeInput.style.boxShadow = '0 0 0 3px var(--in-glow)';
+    codeInput.style.borderColor = form==='out' ? 'var(--out)' : 'var(--dis)';
+    codeInput.style.boxShadow = form==='out' ? '0 0 0 3px var(--out-glow)' : '0 0 0 3px var(--dis-glow)';
     resultEl.innerHTML = results.map(r => `
       <div class="sresult" ondblclick='linkIt("${form}",${JSON.stringify(r)})' onclick='previewItem("${form}",${JSON.stringify(r)})' style="cursor:pointer">
         <div style="display:flex;justify-content:space-between;align-items:center">
@@ -1726,7 +1719,52 @@ window.addEventListener('resize', () => {
 
 
 // ── 없음 버튼 ────────────────────────────────────────────────
-function setNone(id) {
+// ── 사양 자동완성 ────────────────────────────────────────────────
+let _topSpecs = null; // 캐시
+
+async function loadTopSpecs() {
+  const wrap = document.getElementById('top-specs-wrap');
+  if (!wrap) return;
+
+  // 토글
+  if (wrap.style.display === 'flex') { wrap.style.display = 'none'; return; }
+
+  // 캐시 있으면 바로 표시
+  if (_topSpecs) { renderTopSpecs(_topSpecs); return; }
+
+  wrap.style.display = 'flex';
+  wrap.innerHTML = '<span style="font-size:12px;color:var(--g400)">불러오는 중...</span>';
+
+  try {
+    const data = await fetchGET(`${APPS_URL}?action=getTopSpecs&n=10`);
+    _topSpecs = (data && data.specs) ? data.specs : [];
+    renderTopSpecs(_topSpecs);
+  } catch(e) {
+    wrap.innerHTML = '<span style="font-size:12px;color:var(--dis)">불러오기 실패</span>';
+  }
+}
+
+function renderTopSpecs(specs) {
+  const wrap = document.getElementById('top-specs-wrap');
+  if (!specs.length) {
+    wrap.style.display = 'flex';
+    wrap.innerHTML = '<span style="font-size:12px;color:var(--g400)">아직 데이터가 없어요. 입고 등록 후 사용 가능해요</span>';
+    return;
+  }
+  wrap.style.display = 'flex';
+  wrap.innerHTML = specs.map(spec =>
+    `<button type="button" onclick="setSpec('${spec.replace(/'/g,"\\'")}',this)" class="phrase-btn" style="font-size:11px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${spec.length>30?spec.slice(0,30)+'…':spec}</button>`
+  ).join('');
+}
+
+function setSpec(spec, btn) {
+  document.getElementById('in-spec').value = spec;
+  document.querySelectorAll('#top-specs-wrap .phrase-btn').forEach(b => b.style.background = '');
+  btn.style.background = 'var(--in-bg)';
+  btn.style.borderColor = 'var(--in)';
+}
+window.loadTopSpecs = loadTopSpecs;
+window.setSpec = setSpec;
   const el = document.getElementById(id);
   if (!el) return;
   el.value = '-';
@@ -2006,30 +2044,21 @@ function renderStk() {
 function stkGoOut(item) {
   setMode('out');
   setTimeout(() => {
-    // linkIt으로 연결 처리 (linked 세팅 + preview 표시)
     linkIt('out', item);
-
-    // out-code 스타일
     const codeEl = document.getElementById('out-code');
     if (codeEl) {
       codeEl.value = item.code;
-      codeEl.style.borderColor = '#7A96A8';
-      codeEl.style.background  = '#C4D4DE';
+      codeEl.style.borderColor = 'var(--out)';
+      codeEl.style.background  = 'var(--out-bg)';
       codeEl.style.fontWeight  = '700';
     }
-
-    // 수량 자동 세팅
     const qtyEl = document.getElementById('out-qty');
     if (qtyEl) qtyEl.value = item.qty || '1';
-
-    // 힌트 표시
     const hint = document.getElementById('out-qty-hint');
     if (hint) {
       hint.style.display = 'block';
       hint.innerHTML = `📦 보유 수량: <strong>${item.qty}개</strong> (${item.zone || '-'}) — 일부만 출고 가능`;
     }
-
-    // 화면 상단으로 스크롤
     window.scrollTo({ top: 0, behavior: 'smooth' });
     showT(`✅ ${item.name} (${item.code}) 출고 연결 완료`, 'ok');
   }, 250);
@@ -2039,18 +2068,15 @@ function stkGoDis(item) {
   setMode('dis');
   setTimeout(() => {
     linkIt('dis', item);
-
     const codeEl = document.getElementById('dis-code');
     if (codeEl) {
       codeEl.value = item.code;
-      codeEl.style.borderColor = '#B07A74';
-      codeEl.style.background  = '#E8C8C4';
+      codeEl.style.borderColor = 'var(--dis)';
+      codeEl.style.background  = 'var(--dis-bg)';
       codeEl.style.fontWeight  = '700';
     }
-
     const qtyEl = document.getElementById('dis-qty');
     if (qtyEl) qtyEl.value = item.qty || '1';
-
     window.scrollTo({ top: 0, behavior: 'smooth' });
     showT(`✅ ${item.name} (${item.code}) 폐기 연결 완료`, 'ok');
   }, 250);
