@@ -489,7 +489,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 <div id="form-out" style="display:none">
   <!-- 품목 연결 -->
   <div class="search-card out-t">
-    <div class="search-ttl out-t">📋 출고 품목 연결</div>
+    <div class="search-ttl out-t" style="color:#000">📋 출고 품목 연결</div>
     <div id="out-tab-code">
       <label class="lbl">관리번호 입력</label>
       <div style="display:flex;gap:8px">
@@ -584,7 +584,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 <div id="form-dis" style="display:none">
   <!-- 품목 연결 -->
   <div class="search-card dis">
-    <div class="search-ttl dis">🗂 폐기 품목 연결</div>
+    <div class="search-ttl dis" style="color:#000">🗑 폐기 품목 연결</div>
     <div id="dis-tab-code">
       <label class="lbl">관리번호 입력</label>
       <div style="display:flex;gap:8px">
@@ -2255,7 +2255,7 @@ function renderStk() {
       ${r.spec ? `<div class="stk-item-row" style="margin-top:3px"><span style="color:var(--g600)">📋 ${r.spec.slice(0,40)}${r.spec.length>40?'…':''}</span></div>` : ''}
       <div class="stk-action-row">
         <button class="stk-action-btn stk-action-out" onclick='stkGoOut(${JSON.stringify(r)})'>📤 출고 연결</button>
-        <button class="stk-action-btn stk-action-dis" onclick='stkGoDis(${JSON.stringify(r)})'>🗂 폐기 연결</button>
+        <button class="stk-action-btn stk-action-dis" onclick='stkGoDis(${JSON.stringify(r)})'>🗑 폐기 연결</button>
       </div>
     </div>`).join('');
 }
@@ -2263,7 +2263,6 @@ function renderStk() {
 function stkGoOut(item) {
   setMode('out');
   setTimeout(() => {
-    // 관리번호 자동 입력
     const codeEl = document.getElementById('out-code');
     if (codeEl) {
       codeEl.value = item.code;
@@ -2271,17 +2270,11 @@ function stkGoOut(item) {
       codeEl.style.background  = 'var(--out-bg)';
       codeEl.style.fontWeight  = '700';
     }
-    // 수량 자동 세팅
     const qtyEl = document.getElementById('out-qty');
     if (qtyEl) qtyEl.value = item.qty || '1';
-    // 힌트 표시
-    const hint = document.getElementById('out-qty-hint');
-    if (hint) {
-      hint.style.display = 'block';
-      hint.innerHTML = `📦 보유 수량: <strong>${item.qty}개</strong> (${item.zone || '-'}) — 조회 버튼을 눌러 연결하세요`;
-    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    showT(`✅ ${item.name} (${item.code}) — 관리번호 입력 완료. [조회] 버튼을 눌러주세요`, 'ok');
+    // 조회 자동 실행
+    onCode('out', item.code);
   }, 200);
 }
 
@@ -2298,7 +2291,8 @@ function stkGoDis(item) {
     const qtyEl = document.getElementById('dis-qty');
     if (qtyEl) qtyEl.value = item.qty || '1';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    showT(`✅ ${item.name} (${item.code}) — 관리번호 입력 완료. [조회] 버튼을 눌러주세요`, 'ok');
+    // 조회 자동 실행
+    onCode('dis', item.code);
   }, 200);
 }
 
