@@ -117,6 +117,29 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .reason-btn{padding:12px 8px;border:2px solid var(--g200);border-radius:10px;background:var(--white);font-family:var(--font);font-size:13px;font-weight:700;color:var(--g600);cursor:pointer;transition:all .15s;text-align:center}
 .reason-btn.sel{border-color:var(--dis);background:var(--dis-bg);color:#000}
 
+/* 퀵픽 (자주 사용 / 없음) */
+.qp-wrap{margin-bottom:8px}
+.qp-bar{display:flex;gap:6px;margin-bottom:6px}
+.qp-btn{padding:4px 10px;border:1.5px solid var(--g200);border-radius:20px;background:var(--white);font-family:var(--font);font-size:11px;font-weight:700;color:var(--g600);cursor:pointer;transition:all .12s}
+.qp-btn.none-btn{border-color:var(--gray);color:var(--g600)}
+.qp-btn.rec-btn{border-color:var(--in);color:var(--in)}
+.qp-chips{display:flex;flex-wrap:wrap;gap:5px;padding:6px 0}
+.qp-chip{padding:6px 12px;border:1.5px solid var(--g200);border-radius:20px;background:var(--white);font-family:var(--font);font-size:12px;font-weight:600;color:var(--g800);cursor:pointer;transition:all .12s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qp-chip:active{background:var(--in-bg);border-color:var(--in)}
+.qp-chip.loading{color:var(--g400);font-style:italic}
+
+/* 사이즈 추천 버튼 */
+.size-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.size-chip{padding:5px 10px;border:1.5px solid var(--g200);border-radius:20px;background:var(--white);font-family:var(--mono);font-size:11px;font-weight:600;color:var(--g600);cursor:pointer;transition:all .12s}
+.size-chip:active{background:var(--out-bg);border-color:var(--out)}
+
+/* 재고 카드 높이 통일 */
+.stk-item{background:var(--white);border:1px solid var(--g100);border-radius:var(--r);padding:14px 16px;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.stk-item-body{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;min-height:72px}
+
+/* 위치 뱃지 */
+.zone-badge{display:inline-flex;align-items:center;gap:3px;background:var(--in-bg);color:var(--in);font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px}
+
 /* 검색 */
 .search-card{border-radius:var(--r);padding:16px;margin-bottom:10px;border:1.5px solid var(--g200);background:var(--g50)}
 .search-card.out-t{background:var(--out-bg);border-color:var(--out)}
@@ -359,11 +382,25 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     </div>
     <div class="field">
       <label class="lbl">회수 담당자 <span class="req">*</span></label>
+      <div class="qp-wrap">
+        <div class="qp-bar">
+          <button type="button" class="qp-btn rec-btn" onclick="showQP('in-worker','worker',this)">자주 사용 ▾</button>
+          <button type="button" class="qp-btn none-btn" onclick="setVal('in-worker','-')">없음</button>
+        </div>
+        <div class="qp-chips" id="qp-in-worker" style="display:none"></div>
+      </div>
       <input class="inp" id="in-worker" type="text" placeholder="예: 최류정 대리" autocomplete="off">
     </div>
     <div class="field">
       <label class="lbl">회수 요청자 <span class="req">*</span></label>
-      <input class="inp" id="in-requester" type="text" placeholder="예: 정윤정 사원, 장한나 사원, 노창완 사원" autocomplete="off">
+      <div class="qp-wrap">
+        <div class="qp-bar">
+          <button type="button" class="qp-btn rec-btn" onclick="showQP('in-requester','requester',this)">자주 사용 ▾</button>
+          <button type="button" class="qp-btn none-btn" onclick="setVal('in-requester','-')">없음</button>
+        </div>
+        <div class="qp-chips" id="qp-in-requester" style="display:none"></div>
+      </div>
+      <input class="inp" id="in-requester" type="text" placeholder="예: 정윤정 사원, 장한나 사원" autocomplete="off">
     </div>
   </div>
 
@@ -388,17 +425,38 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     <div class="field">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
         <label class="lbl" style="margin-bottom:0">사양 <span class="req">*</span></label>
-        <button type="button" onclick="loadTopSpecs()" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">자주 쓴 사양 ▾</button>
+        <div style="display:flex;gap:5px">
+          <button type="button" class="qp-btn rec-btn" onclick="showQP('in-spec','spec',this)">자주 사용 ▾</button>
+          <button type="button" class="qp-btn none-btn" onclick="setVal('in-spec','-')">없음</button>
+        </div>
       </div>
-      <div id="top-specs-wrap" style="display:none;flex-wrap:wrap;gap:5px;margin-bottom:8px"></div>
-      <textarea class="ta" id="in-spec" rows="4" style="min-height:90px" placeholder="예: SWAN / RQ309 / PINK, 삼성, 제조년월, 모델코드, S/N, 화이트 안정기O, 블랙 안정기X, 이불걸이 화이트, 베개받침대 아연, 2구 콘센트, 롤카펫"></textarea>
+      <div class="qp-chips" id="qp-in-spec" style="display:none"></div>
+      <textarea class="ta" id="in-spec" rows="4" style="min-height:90px" placeholder="예: SWAN / RQ309 / PINK, 삼성, 제조년월, 모델코드, S/N"></textarea>
     </div>
     <div class="field">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px"><label class="lbl" style="margin-bottom:0">사이즈 <span class="req">*</span></label><button type="button" onclick="setNone('in-size')" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">없음</button></div>
-      <input class="inp" id="in-size" type="text" placeholder="예: 44인치, 3,000mm x 2,000mm">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+        <label class="lbl" style="margin-bottom:0">사이즈 <span class="req">*</span></label>
+        <button type="button" class="qp-btn none-btn" onclick="setVal('in-size','-')">없음</button>
+      </div>
+      <div class="size-chips">
+        <button type="button" class="size-chip" onclick="setVal('in-size','32인치')">32인치</button>
+        <button type="button" class="size-chip" onclick="setVal('in-size','43인치')">43인치</button>
+        <button type="button" class="size-chip" onclick="setVal('in-size','55인치')">55인치</button>
+        <button type="button" class="size-chip" onclick="setVal('in-size','65인치')">65인치</button>
+        <button type="button" class="size-chip" onclick="setVal('in-size','75인치')">75인치</button>
+        <button type="button" class="size-chip" onclick="setSizeMMInput('in-size')">mm형식 ▸</button>
+      </div>
+      <input class="inp" id="in-size" type="text" placeholder="예: 55인치, 3,000mm x 2,000mm">
     </div>
     <div class="field">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px"><label class="lbl" style="margin-bottom:0">구성품 <span class="req">*</span></label><button type="button" onclick="setNone('in-parts')" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">없음</button></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+        <label class="lbl" style="margin-bottom:0">구성품 <span class="req">*</span></label>
+        <div style="display:flex;gap:5px">
+          <button type="button" class="qp-btn rec-btn" onclick="showQP('in-parts','parts',this)">자주 사용 ▾</button>
+          <button type="button" class="qp-btn none-btn" onclick="setVal('in-parts','-')">없음</button>
+        </div>
+      </div>
+      <div class="qp-chips" id="qp-in-parts" style="display:none"></div>
       <input class="inp" id="in-parts" type="text" placeholder="예: 리모컨, 전원선, 단자함">
     </div>
   </div>
@@ -419,7 +477,14 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 
   <!-- 특이사항 -->
   <div class="card">
-    <div class="card-ttl" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:6px"><span class="dot g"></span>특이사항 <span class="req">*</span></span><button type="button" onclick="setNone('in-note')" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">없음</button></div>
+    <div class="card-ttl"><span class="dot g"></span>특이사항 <span class="req">*</span></div>
+    <div class="qp-wrap">
+      <div class="qp-bar">
+        <button type="button" class="qp-btn rec-btn" onclick="showQP('in-note','note',this)">자주 사용 ▾</button>
+        <button type="button" class="qp-btn none-btn" onclick="setVal('in-note','-')">없음</button>
+      </div>
+      <div class="qp-chips" id="qp-in-note" style="display:none"></div>
+    </div>
     <textarea class="ta" id="in-note" placeholder="파손 여부, 주의사항 등"></textarea>
   </div>
 </div><!-- /form-in -->
@@ -430,9 +495,9 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
   <div class="search-card out-t">
     <div class="search-ttl out-t">📋 출고 품목 연결</div>
     <div id="out-tab-code">
-      <label class="lbl">날짜 또는 관리번호 입력</label>
+      <label class="lbl">관리번호 입력</label>
       <div style="display:flex;gap:8px">
-        <input class="inp mono" id="out-code" type="text" placeholder="예: 20260501 또는 20260501_01" autocomplete="off" oninput="onCodeInput('out',this.value)" style="flex:1">
+        <input class="inp mono" id="out-code" type="text" placeholder="예: 20260501_01" autocomplete="off" oninput="onCodeInput('out',this.value)" style="flex:1">
         <button onclick="searchByDate('out')" style="padding:0 14px;border:1.5px solid var(--accent);border-radius:var(--r-sm);background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">조회</button>
       </div>
       <div class="search-results" id="out-date-results" style="margin-top:6px"></div>
@@ -485,15 +550,36 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     <div class="card-ttl"><span class="dot out"></span>출고 담당자 <span class="req">*</span></div>
     <div class="field">
       <label class="lbl">출고 담당자 <span class="req">*</span></label>
+      <div class="qp-wrap">
+        <div class="qp-bar">
+          <button type="button" class="qp-btn rec-btn" onclick="showQP('out-worker','worker',this)">자주 사용 ▾</button>
+          <button type="button" class="qp-btn none-btn" onclick="setVal('out-worker','-')">없음</button>
+        </div>
+        <div class="qp-chips" id="qp-out-worker" style="display:none"></div>
+      </div>
       <input class="inp" id="out-worker" type="text" placeholder="예: 최류정 대리" autocomplete="off">
     </div>
     <div class="field">
       <label class="lbl">출고 요청자 <span class="req">*</span></label>
-      <input class="inp" id="out-requester" type="text" placeholder="예: 정윤정 사원, 장한나 사원, 노창완 사원" autocomplete="off">
+      <div class="qp-wrap">
+        <div class="qp-bar">
+          <button type="button" class="qp-btn rec-btn" onclick="showQP('out-requester','requester',this)">자주 사용 ▾</button>
+          <button type="button" class="qp-btn none-btn" onclick="setVal('out-requester','-')">없음</button>
+        </div>
+        <div class="qp-chips" id="qp-out-requester" style="display:none"></div>
+      </div>
+      <input class="inp" id="out-requester" type="text" placeholder="예: 정윤정 사원, 장한나 사원" autocomplete="off">
     </div>
   </div>
   <div class="card">
-    <div class="card-ttl" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:6px"><span class="dot g"></span>특이사항</span><button type="button" onclick="setNone('out-note')" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">없음</button></div>
+    <div class="card-ttl"><span class="dot g"></span>특이사항</div>
+    <div class="qp-wrap">
+      <div class="qp-bar">
+        <button type="button" class="qp-btn rec-btn" onclick="showQP('out-note','note',this)">자주 사용 ▾</button>
+        <button type="button" class="qp-btn none-btn" onclick="setVal('out-note','-')">없음</button>
+      </div>
+      <div class="qp-chips" id="qp-out-note" style="display:none"></div>
+    </div>
     <textarea class="ta" id="out-note" placeholder="전달 메모, 인수자 등"></textarea>
   </div>
 </div><!-- /form-out -->
@@ -502,12 +588,12 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 <div id="form-dis" style="display:none">
   <!-- 품목 연결 -->
   <div class="search-card dis">
-    <div class="search-ttl dis">🗑 폐기 품목 연결</div>
+    <div class="search-ttl dis">🗂 폐기 품목 연결</div>
     <div id="dis-tab-code">
-      <label class="lbl">날짜 또는 관리번호 입력</label>
+      <label class="lbl">관리번호 입력</label>
       <div style="display:flex;gap:8px">
-        <input class="inp mono" id="dis-code" type="text" placeholder="예: 20260501 또는 20260501_01" autocomplete="off" oninput="onCodeInput('dis',this.value)" style="flex:1">
-        <button onclick="searchByDate('dis')" style="padding:0 14px;border:1.5px solid var(--dis);border-radius:var(--r-sm);background:var(--dis);color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">조회</button>
+        <input class="inp mono" id="dis-code" type="text" placeholder="예: 20260501_01" autocomplete="off" oninput="onCodeInput('dis',this.value)" style="flex:1">
+        <button onclick="searchByDate('dis')" style="padding:0 14px;border:1.5px solid var(--dis);border-radius:var(--r-sm);background:var(--dis);color:#000;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">조회</button>
       </div>
       <div class="search-results" id="dis-date-results" style="margin-top:6px"></div>
     </div>
@@ -566,19 +652,39 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     <div class="card-ttl"><span class="dot dis"></span>담당자 <span class="req">*</span></div>
     <div class="field">
       <label class="lbl">폐기 담당자 <span class="req">*</span></label>
+      <div class="qp-wrap">
+        <div class="qp-bar">
+          <button type="button" class="qp-btn rec-btn" onclick="showQP('dis-worker','worker',this)">자주 사용 ▾</button>
+          <button type="button" class="qp-btn none-btn" onclick="setVal('dis-worker','-')">없음</button>
+        </div>
+        <div class="qp-chips" id="qp-dis-worker" style="display:none"></div>
+      </div>
       <input class="inp" id="dis-worker" type="text" placeholder="예: 최류정 대리" autocomplete="off">
     </div>
     <div class="field">
       <label class="lbl">폐기 요청자 <span class="req">*</span></label>
-      <input class="inp" id="dis-requester" type="text" placeholder="예: 정윤정 사원, 장한나 사원, 노창완 사원" autocomplete="off">
+      <div class="qp-wrap">
+        <div class="qp-bar">
+          <button type="button" class="qp-btn rec-btn" onclick="showQP('dis-requester','requester',this)">자주 사용 ▾</button>
+          <button type="button" class="qp-btn none-btn" onclick="setVal('dis-requester','-')">없음</button>
+        </div>
+        <div class="qp-chips" id="qp-dis-requester" style="display:none"></div>
+      </div>
+      <input class="inp" id="dis-requester" type="text" placeholder="예: 정윤정 사원, 장한나 사원" autocomplete="off">
     </div>
   </div>
   <div class="card">
-    <div class="card-ttl" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:6px"><span class="dot g"></span>특이사항</span><button type="button" onclick="setNone('dis-note')" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">없음</button></div>
+    <div class="card-ttl"><span class="dot g"></span>특이사항</div>
+    <div class="qp-bar" style="margin-bottom:8px">
+      <button type="button" class="qp-btn rec-btn" onclick="showQP('dis-note','note',this)">자주 사용 ▾</button>
+      <button type="button" class="qp-btn none-btn" onclick="setVal('dis-note','-')">없음</button>
+    </div>
+    <div class="qp-chips" id="qp-dis-note" style="display:none"></div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
-      <button type="button" onclick="addPhrase('dis-note','현장 폐기 처리')" class="phrase-btn">현장 폐기 처리</button>
-      <button type="button" onclick="addPhrase('dis-note','수거 업체 인계')" class="phrase-btn">수거 업체 인계</button>
-      <button type="button" onclick="addPhrase('dis-note','창고 내 처리')" class="phrase-btn">창고 내 처리</button>
+      <button type="button" class="phrase-btn" onclick="addPhrase('dis-note','현장 폐기 처리')">현장 폐기 처리</button>
+      <button type="button" class="phrase-btn" onclick="addPhrase('dis-note','수거 업체 인계')">수거 업체 인계</button>
+      <button type="button" class="phrase-btn" onclick="addPhrase('dis-note','창고 내 처리')">창고 내 처리</button>
+      <button type="button" class="phrase-btn" onclick="addPhrase('dis-note','사진 촬영 완료')">사진 촬영 완료</button>
     </div>
     <textarea class="ta" id="dis-note" placeholder="처리 방법, 전달사항 등"></textarea>
   </div>
@@ -704,6 +810,13 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     <!-- 담당자 -->
     <div class="card">
       <div class="card-ttl"><span class="dot in"></span>회수 담당자 <span class="req">*</span></div>
+      <div class="qp-wrap">
+        <div class="qp-bar">
+          <button type="button" class="qp-btn rec-btn" onclick="showQP('edit-worker','worker',this)">자주 사용 ▾</button>
+          <button type="button" class="qp-btn none-btn" onclick="setVal('edit-worker','-')">없음</button>
+        </div>
+        <div class="qp-chips" id="qp-edit-worker" style="display:none"></div>
+      </div>
       <input class="inp" id="edit-worker" type="text" placeholder="예: 최류정 대리" autocomplete="off">
     </div>
     <!-- 수량 -->
@@ -719,15 +832,40 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     <div class="card">
       <div class="card-ttl"><span class="dot g"></span>상세 정보</div>
       <div class="field">
-        <label class="lbl">사양</label>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+          <label class="lbl" style="margin-bottom:0">사양</label>
+          <div style="display:flex;gap:5px">
+            <button type="button" class="qp-btn rec-btn" onclick="showQP('edit-spec','spec',this)">자주 사용 ▾</button>
+            <button type="button" class="qp-btn none-btn" onclick="setVal('edit-spec','-')">없음</button>
+          </div>
+        </div>
+        <div class="qp-chips" id="qp-edit-spec" style="display:none"></div>
         <textarea class="ta" id="edit-spec" placeholder="예: SWAN/RQ309/PINK, 삼성 제조년월 모델코드 S/N"></textarea>
       </div>
       <div class="field">
-        <label class="lbl">사이즈</label>
-        <input class="inp" id="edit-size" type="text" placeholder="예: 44인치, 3,000mm x 2,000mm">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+          <label class="lbl" style="margin-bottom:0">사이즈</label>
+          <button type="button" class="qp-btn none-btn" onclick="setVal('edit-size','-')">없음</button>
+        </div>
+        <div class="size-chips">
+          <button type="button" class="size-chip" onclick="setVal('edit-size','32인치')">32인치</button>
+          <button type="button" class="size-chip" onclick="setVal('edit-size','43인치')">43인치</button>
+          <button type="button" class="size-chip" onclick="setVal('edit-size','55인치')">55인치</button>
+          <button type="button" class="size-chip" onclick="setVal('edit-size','65인치')">65인치</button>
+          <button type="button" class="size-chip" onclick="setVal('edit-size','75인치')">75인치</button>
+          <button type="button" class="size-chip" onclick="setSizeMMInput('edit-size')">mm형식 ▸</button>
+        </div>
+        <input class="inp" id="edit-size" type="text" placeholder="예: 55인치, 3,000mm x 2,000mm">
       </div>
       <div class="field">
-        <label class="lbl">구성품</label>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+          <label class="lbl" style="margin-bottom:0">구성품</label>
+          <div style="display:flex;gap:5px">
+            <button type="button" class="qp-btn rec-btn" onclick="showQP('edit-parts','parts',this)">자주 사용 ▾</button>
+            <button type="button" class="qp-btn none-btn" onclick="setVal('edit-parts','-')">없음</button>
+          </div>
+        </div>
+        <div class="qp-chips" id="qp-edit-parts" style="display:none"></div>
         <input class="inp" id="edit-parts" type="text" placeholder="예: 리모컨, 전원선, 단자함">
       </div>
     </div>
@@ -746,7 +884,14 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
     </div>
     <!-- 특이사항 -->
     <div class="card">
-      <div class="card-ttl" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:6px"><span class="dot g"></span>특이사항</span><button type="button" onclick="setNone('edit-note')" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--g200);border-radius:12px;background:var(--g50);color:var(--g600);font-family:var(--font);font-weight:700;cursor:pointer">없음</button></div>
+      <div class="card-ttl"><span class="dot g"></span>특이사항</div>
+      <div class="qp-wrap">
+        <div class="qp-bar">
+          <button type="button" class="qp-btn rec-btn" onclick="showQP('edit-note','note',this)">자주 사용 ▾</button>
+          <button type="button" class="qp-btn none-btn" onclick="setVal('edit-note','-')">없음</button>
+        </div>
+        <div class="qp-chips" id="qp-edit-note" style="display:none"></div>
+      </div>
       <textarea class="ta" id="edit-note" placeholder="파손 여부, 주의사항 등"></textarea>
     </div>
     <!-- 수정 사유 -->
@@ -1343,6 +1488,7 @@ function validate() {
 // ── 제출 ──────────────────────────────────────────────────────
 async function submit() {
   if (!validate()) return;
+  saveFreqAll(); // 자주사용 데이터 저장
   let p = {};
 
   if (mode === 'in') {
@@ -1724,8 +1870,71 @@ window.addEventListener('resize', () => {
 
 
 // ── 없음 버튼 ────────────────────────────────────────────────
-// ── 사양 자동완성 ────────────────────────────────────────────────
-let _topSpecs = null; // 캐시
+// ── 퀵픽 (자주 사용 / 없음) ────────────────────────────────────
+const _qpCache = {}; // { field: [val, ...] }
+
+async function showQP(targetId, field, btn) {
+  const wrapId = 'qp-' + targetId;
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+
+  // 토글
+  if (wrap.style.display === 'flex') {
+    wrap.style.display = 'none';
+    btn.textContent = '자주 사용 ▾';
+    return;
+  }
+
+  wrap.style.display = 'flex';
+  btn.textContent = '자주 사용 ▴';
+  wrap.innerHTML = '<span class="qp-chip loading">불러오는 중...</span>';
+
+  // 캐시 사용
+  if (_qpCache[field]) {
+    renderQP(wrap, _qpCache[field], targetId);
+    return;
+  }
+
+  try {
+    const data = await fetchGET(`${APPS_URL}?action=getTopValues&field=${field}&n=8`);
+    const vals = (data && data.values) ? data.values : [];
+    _qpCache[field] = vals;
+    renderQP(wrap, vals, targetId);
+  } catch(e) {
+    wrap.innerHTML = '<span class="qp-chip loading">데이터 없음</span>';
+  }
+}
+
+function renderQP(wrap, vals, targetId) {
+  if (!vals.length) {
+    wrap.innerHTML = '<span class="qp-chip loading">아직 데이터가 없어요. 등록 후 사용 가능해요</span>';
+    return;
+  }
+  wrap.innerHTML = vals.map(v =>
+    `<button type="button" class="qp-chip" onclick="setVal('${targetId}','${v.replace(/'/g,"\\'")}')">${v.length>20?v.slice(0,20)+'…':v}</button>`
+  ).join('');
+}
+
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.value = val;
+  el.focus();
+  el.dispatchEvent(new Event('input'));
+}
+
+// 사이즈 mm 형식 입력 안내
+function setSizeMMInput(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.value = '0,000mm x 0,000mm';
+  el.focus();
+  el.select();
+}
+
+window.showQP = showQP;
+window.setVal = setVal;
+window.setSizeMMInput = setSizeMMInput;
 
 async function loadTopSpecs() {
   const wrap = document.getElementById('top-specs-wrap');
@@ -1829,7 +2038,6 @@ function openEditScreen(item) {
   document.getElementById('edit-note').value     = item.note   || '';
   document.getElementById('edit-modifier').value = '';
   document.getElementById('edit-reason').value   = '';
-
   document.getElementById('edit-date').value     = item.date   || '';
   const disp = document.getElementById('edit-date-display');
   if (disp) disp.textContent = item.date || '-';
@@ -1844,7 +2052,12 @@ function openEditScreen(item) {
     });
   }
 
-  // 현재 수정 중인 코드 저장
+  // 수정창 자주사용 드롭다운 표시
+  setTimeout(() => {
+    showFreqDrop('edit-worker', 'worker');
+    showFreqDrop('edit-parts',  'parts');
+  }, 100);
+
   window._editCode = item.code;
   document.getElementById('edit-screen').classList.add('show');
 }
@@ -2033,17 +2246,17 @@ function renderStk() {
     <div class="stk-item">
       <div class="stk-item-top">
         <div class="stk-item-name">${r.name}</div>
-        <span class="stk-item-zone">${r.zone || '-'}</span>
+        <span class="zone-badge">📍 ${r.zone || '-'}</span>
       </div>
       <div class="stk-item-code">${r.code}</div>
-      <div class="stk-item-row">
+      <div class="stk-item-body stk-item-row">
         <span>📦 <strong>${r.qty}개</strong></span>
         <span>🏪 ${r.store}</span>
-        ${r.spec ? `<span>📝 ${r.spec.slice(0,20)}${r.spec.length>20?'…':''}</span>` : ''}
+        ${r.spec ? `<span>📋 ${r.spec.slice(0,30)}${r.spec.length>30?'…':''}</span>` : ''}
       </div>
       <div class="stk-action-row">
         <button class="stk-action-btn stk-action-out" onclick='stkGoOut(${JSON.stringify(r)})'>📤 출고 연결</button>
-        <button class="stk-action-btn stk-action-dis" onclick='stkGoDis(${JSON.stringify(r)})'>🗑 폐기 연결</button>
+        <button class="stk-action-btn stk-action-dis" onclick='stkGoDis(${JSON.stringify(r)})'>🗂 폐기 연결</button>
       </div>
     </div>`).join('');
 }
@@ -2150,6 +2363,10 @@ window.closeEdit = closeEdit;
 window.selEditZone = selEditZone;
 window.setNone = setNone;
 window.addPhrase = addPhrase;
+window.showFreqDrop = showFreqDrop;
+window.pickFreq = pickFreq;
+window.freqSave = freqSave;
+window.saveFreqAll = saveFreqAll;
 window.loadStock = loadStock;
 window.filterStk = filterStk;
 window.stkGoOut = stkGoOut;
