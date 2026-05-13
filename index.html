@@ -1319,7 +1319,7 @@ function setMode(m) {
     submitBar.style.display = 'flex';
     sub.textContent = {in:'📦 입고 등록', out:'📤 출고 등록', dis:'🗑 폐기 처리'}[m];
     sub.className = `btn-sub ${m}-mode`;
-    contBtn.style.display = m === 'in' ? 'flex' : 'none';
+    if (contBtn) contBtn.style.display = m === 'in' ? 'flex' : 'none';
   }
 }
 
@@ -1480,7 +1480,6 @@ function validate() {
 // ── 제출 ──────────────────────────────────────────────────────
 async function submit() {
   if (!validate()) return;
-  saveFreqAll(); // 자주사용 데이터 저장
   let p = {};
 
   if (mode === 'in') {
@@ -1934,6 +1933,7 @@ function setSizeInchInput(id) {
 window.showQP = showQP;
 window.setVal = setVal;
 window.setSizeMMInput = setSizeMMInput;
+window.setSizeInchInput = setSizeInchInput;
 
 async function loadTopSpecs() {
   const wrap = document.getElementById('top-specs-wrap');
@@ -2050,12 +2050,6 @@ function openEditScreen(item) {
       }
     });
   }
-
-  // 수정창 자주사용 드롭다운 표시
-  setTimeout(() => {
-    showFreqDrop('edit-worker', 'worker');
-    showFreqDrop('edit-parts',  'parts');
-  }, 100);
 
   window._editCode = item.code;
   document.getElementById('edit-screen').classList.add('show');
@@ -2360,10 +2354,6 @@ window.closeEdit = closeEdit;
 window.selEditZone = selEditZone;
 window.setNone = setNone;
 window.addPhrase = addPhrase;
-window.showFreqDrop = showFreqDrop;
-window.pickFreq = pickFreq;
-window.freqSave = freqSave;
-window.saveFreqAll = saveFreqAll;
 window.loadStock = loadStock;
 window.filterStk = filterStk;
 window.stkGoOut = stkGoOut;
