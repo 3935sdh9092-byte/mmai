@@ -298,7 +298,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 <!-- HEADER -->
 <div class="hdr">
   <div class="hdr-top">
-    <div class="logo"><em id="logo-em">회수품</em> 리스트<span class="logo-ver">ver.43</span></div>
+    <div class="logo"><em id="logo-em">회수품</em> 리스트<span class="logo-ver">ver.1</span></div>
     <div style="display:flex;align-items:center;gap:6px">
       <button onclick="toggleRelabel()" class="hdr-btn">라벨재출력</button>
       <button onclick="toggleEditBar()" class="hdr-btn">수정</button>
@@ -2262,7 +2262,7 @@ function renderStk() {
 
 function stkGoOut(item) {
   setMode('out');
-  setTimeout(() => {
+  setTimeout(async () => {
     const codeEl = document.getElementById('out-code');
     if (codeEl) {
       codeEl.value = item.code;
@@ -2273,14 +2273,16 @@ function stkGoOut(item) {
     const qtyEl = document.getElementById('out-qty');
     if (qtyEl) qtyEl.value = item.qty || '1';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    // 조회 자동 실행
-    onCode('out', item.code);
-  }, 200);
+    try {
+      const data = await fetchGET(`${APPS_URL}?action=getByCode&code=${encodeURIComponent(item.code)}`);
+      if (data && data.found) linkIt('out', data.item);
+    } catch(e) {}
+  }, 500);
 }
 
 function stkGoDis(item) {
   setMode('dis');
-  setTimeout(() => {
+  setTimeout(async () => {
     const codeEl = document.getElementById('dis-code');
     if (codeEl) {
       codeEl.value = item.code;
@@ -2291,9 +2293,11 @@ function stkGoDis(item) {
     const qtyEl = document.getElementById('dis-qty');
     if (qtyEl) qtyEl.value = item.qty || '1';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    // 조회 자동 실행
-    onCode('dis', item.code);
-  }, 200);
+    try {
+      const data = await fetchGET(`${APPS_URL}?action=getByCode&code=${encodeURIComponent(item.code)}`);
+      if (data && data.found) linkIt('dis', data.item);
+    } catch(e) {}
+  }, 500);
 }
 
 // ── 📦 연속 등록 ────────────────────────────────────────────────
