@@ -2262,7 +2262,7 @@ function renderStk() {
 
 function stkGoOut(item) {
   setMode('out');
-  setTimeout(async () => {
+  setTimeout(() => {
     const codeEl = document.getElementById('out-code');
     if (codeEl) {
       codeEl.value = item.code;
@@ -2272,17 +2272,19 @@ function stkGoOut(item) {
     }
     const qtyEl = document.getElementById('out-qty');
     if (qtyEl) qtyEl.value = item.qty || '1';
+    const hint = document.getElementById('out-qty-hint');
+    if (hint) {
+      hint.style.display = 'block';
+      hint.innerHTML = `📦 보유 수량: <strong>${item.qty}개</strong> (${item.zone||'-'})`;
+    }
+    linkIt('out', item);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    try {
-      const data = await fetchGET(`${APPS_URL}?action=getByCode&code=${encodeURIComponent(item.code)}`);
-      if (data && data.found) linkIt('out', data.item);
-    } catch(e) {}
-  }, 500);
+  }, 300);
 }
 
 function stkGoDis(item) {
   setMode('dis');
-  setTimeout(async () => {
+  setTimeout(() => {
     const codeEl = document.getElementById('dis-code');
     if (codeEl) {
       codeEl.value = item.code;
@@ -2292,12 +2294,9 @@ function stkGoDis(item) {
     }
     const qtyEl = document.getElementById('dis-qty');
     if (qtyEl) qtyEl.value = item.qty || '1';
+    linkIt('dis', item);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    try {
-      const data = await fetchGET(`${APPS_URL}?action=getByCode&code=${encodeURIComponent(item.code)}`);
-      if (data && data.found) linkIt('dis', data.item);
-    } catch(e) {}
-  }, 500);
+  }, 300);
 }
 
 // ── 📦 연속 등록 ────────────────────────────────────────────────
