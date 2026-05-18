@@ -180,14 +180,14 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 /* ✏️ 수정 화면 */
 .edit-screen{display:none;position:fixed;inset:0;background:var(--white);z-index:260;flex-direction:column;overflow:hidden}
 .edit-screen.show{display:flex}
-.edit-hdr{background:var(--accent);padding:14px 18px 10px;flex-shrink:0}
+.edit-hdr{background:var(--edit-color,var(--in));padding:14px 18px 10px;flex-shrink:0}
 .edit-hdr-top{display:flex;align-items:center;justify-content:space-between}
-.edit-hdr-title{color:#fff;font-size:15px;font-weight:900}
-.edit-hdr-code{color:rgba(255,255,255,.75);font-size:11px;font-family:var(--mono);margin-top:3px}
-.edit-close{width:36px;height:36px;border:none;background:rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.edit-hdr-title{color:#000;font-size:15px;font-weight:900}
+.edit-hdr-code{color:rgba(0,0,0,.6);font-size:11px;font-family:var(--mono);margin-top:3px}
+.edit-close{width:36px;height:36px;border:none;background:rgba(0,0,0,.1);border-radius:8px;color:#000;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .edit-body{flex:1;overflow-y:auto;padding:12px 14px 110px;-webkit-overflow-scrolling:touch}
 .edit-submit-bar{display:flex;gap:8px;padding:12px 14px;background:var(--white);border-top:1px solid var(--g100);position:absolute;bottom:0;left:0;right:0;z-index:10}
-.btn-edit-save{flex:1;height:52px;border:none;border-radius:var(--r);font-family:var(--font);font-size:16px;font-weight:700;color:#fff;cursor:pointer;background:var(--accent);box-shadow:0 3px 14px rgba(184,92,30,.3);transition:all .2s}
+.btn-edit-save{flex:1;height:52px;border:none;border-radius:var(--r);font-family:var(--font);font-size:16px;font-weight:700;color:#000;cursor:pointer;background:var(--edit-color,var(--in));box-shadow:0 3px 14px rgba(0,0,0,.1);transition:all .2s}
 .btn-edit-save:active{transform:scale(.97)}
 .btn-edit-del{width:52px;height:52px;border:1.5px solid var(--out);border-radius:var(--r);background:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
@@ -326,7 +326,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 <div id="edit-bar" style="display:none;background:var(--g50);border-bottom:2px solid var(--g200);padding:8px 16px">
   <div style="display:flex;gap:8px;align-items:center">
     <input class="inp mono" id="edit-code-input" type="text" placeholder="수정할 관리번호 (예: 20260507_01)" style="flex:1;font-size:13px;padding:8px 10px">
-    <button onclick="editSearch()" style="padding:8px 14px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">조회</button>
+    <button id="edit-search-btn" onclick="editSearch()" style="padding:8px 14px;border:none;border-radius:8px;background:var(--in);color:#000;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">조회</button>
     <button onclick="toggleEditBar()" style="padding:8px 10px;border:1.5px solid var(--g200);border-radius:8px;background:var(--white);font-size:13px;cursor:pointer">✕</button>
   </div>
 </div>
@@ -494,7 +494,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
       <label class="lbl">관리번호 입력</label>
       <div style="display:flex;gap:8px">
         <input class="inp mono" id="out-code" type="text" placeholder="예: 20260501_01" autocomplete="off" oninput="onCodeInput('out',this.value)" style="flex:1">
-        <button onclick="searchByDate('out')" style="padding:0 14px;border:1.5px solid var(--accent);border-radius:var(--r-sm);background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">조회</button>
+        <button onclick="searchByDate('out')" style="padding:0 14px;border:1.5px solid var(--out);border-radius:var(--r-sm);background:var(--out);color:#000;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">조회</button>
       </div>
       <div class="search-results" id="out-date-results" style="margin-top:6px"></div>
     </div>
@@ -1299,13 +1299,16 @@ function setMode(m) {
   // 로고 em 색상 — 탭별 메인 컬러 연동
   const logoEm = document.getElementById('logo-em');
   if (logoEm) {
-    const colorMap = {
-      in:  'var(--in)',
-      out: 'var(--out)',
-      dis: 'var(--dis)',
-      stk: 'var(--in)',
-    };
+    const colorMap = { in:'var(--in)', out:'var(--out)', dis:'var(--dis)', stk:'var(--in)' };
     logoEm.style.color = colorMap[m] || 'var(--in)';
+  }
+
+  // 수정 바 조회 버튼 색상 연동
+  const editBtn = document.getElementById('edit-search-btn');
+  if (editBtn) {
+    const btnColor = { in:'var(--in)', out:'var(--out)', dis:'var(--dis)', stk:'var(--in)' };
+    editBtn.style.background = btnColor[m] || 'var(--in)';
+    editBtn.style.color = '#000';
   }
 
   // submit bar
@@ -1613,6 +1616,15 @@ function showLabel() {
   document.getElementById('lbl-qty').textContent      = (d.qty||'1') + '개';
   document.getElementById('lbl-date').textContent     = '회수일: ' + (d.date||getShortDate());
   document.getElementById('lbl-worker').textContent   = '담당: ' + (d.worker||'-');
+
+  // 모드 뱃지 업데이트
+  const badge = document.getElementById('lbl-badge');
+  if (badge) {
+    const modeMap = { '입고': { text: '회수', cls: 'in' }, '출고': { text: '출고', cls: 'out' }, '폐기': { text: '폐기', cls: 'dis' } };
+    const m = modeMap[d.mode] || modeMap['입고'];
+    badge.textContent = m.text;
+    badge.className = `label-mode-badge ${m.cls}`;
+  }
 
   const show = (rowId, valId, val) => {
     if (val && val.trim()) {
@@ -2052,6 +2064,11 @@ function openEditScreen(item) {
   }
 
   window._editCode = item.code;
+
+  // 현재 탭 색상으로 수정 화면 헤더/버튼 색상 설정
+  const colorMap = { in: 'var(--in)', out: 'var(--out)', dis: 'var(--dis)' };
+  document.getElementById('edit-screen').style.setProperty('--edit-color', colorMap[mode] || 'var(--in)');
+
   document.getElementById('edit-screen').classList.add('show');
 }
 
