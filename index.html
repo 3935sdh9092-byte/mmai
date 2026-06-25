@@ -1718,33 +1718,36 @@ function scaleLabel() {
 }
 
 function saveLabel() {
-  const card = document.getElementById('label-card');
+  const original = document.getElementById('label-card');
   const d = window._lastDone || {};
-  // 저장 시 스케일 원래대로 (실물 사이즈 보장)
-  const prevTransform = card.style.transform;
-  card.style.transform = 'scale(1)';
-  card.style.transformOrigin = 'top left';
+
+  // 줌/스크롤/transform 영향을 완전히 없애기 위해, 화면 밖에 깨끗한 사본을 만들어 캡처
+  const clone = original.cloneNode(true);
+  clone.id = 'label-card-capture';
+  clone.style.transform = 'none';
+  clone.style.position = 'static';
+  clone.style.margin = '0';
+
+  const container = document.createElement('div');
+  container.style.position = 'fixed';
+  container.style.left = '-99999px';
+  container.style.top = '0';
+  container.style.zIndex = '-1';
+  container.appendChild(clone);
+  document.body.appendChild(container);
 
   setTimeout(() => {
-    html2canvas(card, {
-      scale:5, backgroundColor:'#fff', useCORS:true, logging:false, width:600, height:400,
-      onclone: (clonedDoc) => {
-        const clonedCard = clonedDoc.getElementById('label-card');
-        if (clonedCard) { clonedCard.style.border = 'none'; clonedCard.style.outline = 'none'; clonedCard.style.boxShadow = 'none'; }
-        clonedDoc.querySelectorAll('iframe').forEach(f => { f.style.border = '0'; });
-      }
-    }).then(canvas => {
-      card.style.transform = prevTransform;
-      card.style.transformOrigin = 'top center';
+    html2canvas(clone, { scale:5, backgroundColor:'#fff', useCORS:true, logging:false }).then(canvas => {
+      document.body.removeChild(container);
       const a = document.createElement('a');
       a.download = `라벨_${d.code||''}.png`;
       a.href = canvas.toDataURL('image/png');
       a.click();
     }).catch(() => {
-      card.style.transform = prevTransform;
+      document.body.removeChild(container);
       showT('저장 실패. 다시 시도해주세요.','err');
     });
-  }, 100);
+  }, 50);
 }
 
 function closeLabel() {
